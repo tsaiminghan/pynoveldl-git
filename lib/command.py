@@ -199,7 +199,7 @@ command:
   
   each command could use head of command string to instead of full command
   e.g. n download <url> -> n d <url>
-       n list -> l
+       n list -> n l
   ''')
 
 if __name__ == '__main__':
