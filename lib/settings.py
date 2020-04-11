@@ -46,7 +46,7 @@ class novelsettings(_base):
     return self.get_by_key('Website')
 
 if __name__ == '__main__':
-  settings = novelsettings('..\\.config\\novelwebsite\\www_b5200_net.yml')
+  settings = novelsettings('..\\config\\novelwebsite\\www_b5200_net.yml')
 
   print (settings.downloader)
   print (settings.noveldownloader)

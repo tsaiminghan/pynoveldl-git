@@ -1,0 +1,11 @@
+Downloader:
+  proxies: null
+  timeout: 10
+  encoding: gbk
+NovelDownloader:
+  ctl_append_title_when_dl_chapter: true
+  ctl_dl_delay: 1
+  # if you use multiprocess to download, the websize maybe return http error code 503. 
+  pool_num: 1
+Website:
+  url: www.b5200.net

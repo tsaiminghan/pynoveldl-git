@@ -132,7 +132,7 @@ def support():
   list support website
 '''
   import glob
-  _dir = os.path.join('.config', 'novelwebsite')
+  _dir = os.path.join('config', 'novelwebsite')
   print ('support website list:')
   for site in glob.glob1(_dir, '*.yaml'):
     print ('  {}'.format(site[0:-5]))

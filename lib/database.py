@@ -4,7 +4,7 @@ import os
 from collections import OrderedDict
 from datetime import datetime, timedelta
 
-_listdb = os.path.join('.config', 'database.yaml')
+_listdb = os.path.join('config', 'database.yaml')
 _tfmt = '%Y-%m-%d %H:%M'
 
 

@@ -27,7 +27,7 @@ class NovelDownloader(object):
 
     if not yamlfile:
       url = self.booklink.split('/')[2]
-      yamlfile = os.path.join('.config',
+      yamlfile = os.path.join('config',
                               'novelwebsite',
                               url + '.yaml')
     
