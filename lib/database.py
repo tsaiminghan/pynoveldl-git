@@ -35,8 +35,6 @@ class Database(_base):
     'update_time': mydl.update_time,
     'last_check': datetime.strftime(datetime.now(), _tfmt)
    }
-    
-    return kwargs
 
   def load(self, filename=_listdb):
     data = super().load(filename)
