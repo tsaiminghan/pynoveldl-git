@@ -4,9 +4,6 @@ from bs4 import BeautifulSoup
 import os
 
 class mydl(base):
-  def __init__(self, booklink=None):
-    self.set_booklink(booklink)
-    self.load_settings()
 
   def chapter_list_filter(self, soup):
     div_list = soup.find(id='container_bookinfo')
