@@ -10,3 +10,14 @@ enviroment setup step:<br>
  pip install BeautifulSoup<br>
  pip install requests<br>
  pip install html2text<br>
+
+3. transter to epub and mobi, need below enviroment.<br>
+  AozoraEpub3  (need Java)<br>
+  <a href="https://w.atwiki.jp/hmdev/pages/21.html">https://w.atwiki.jp/hmdev/pages/21.html</a><br>
+  KindleGen  <br>
+  <a href="https://www.amazon.com/gp/feature.html?docId=1000765211">https://www.amazon.com/gp/feature.html?docId=1000765211</a><br>
+  put them together, and set the path to AozoraEpub3_path in globals.yaml.
+
+my enviroment is:<br>
+  Window8<br>
+  Python 3.8.2<br>
