@@ -10,8 +10,15 @@ _tfmt = '%Y-%m-%d %H:%M'
 
 class Database(_base):
 
+  def getDB():
+    if not hasattr(Database, 'db'):
+      db = Database()
+      db.load()
+      Database.db = db    
+    return Database.db
+
   def __init__(self):
-    super().__init__(_listdb)
+    super().__init__(_listdb)  
 
   '''
   0:
@@ -122,3 +129,4 @@ class Database(_base):
     k = self.find_key_by_url(d['url'])
     if k:
       self.remove_by_id(k)
+  

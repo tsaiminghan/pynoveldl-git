@@ -27,8 +27,7 @@ def _select(booklink, **kwargs):
 
   if booklink.isdigit():
     # this is book id
-    db = Database()
-    db.load()
+    db = Database.getDB()
     d = db.find_item_by_id(booklink)    
     booklink = d['url']
     
@@ -56,8 +55,7 @@ def _download(booklink, **kwargs):
   mydl.get_chapter_list()
   mydl.dl_all_chapters()
      
-  db = Database()
-  db.load()  
+  db = Database.getDB()
   d = db.item(mydl)
 
   raw2text(d)
@@ -83,8 +81,7 @@ def download(*argv, **kwargs):
       n d 0 1 2
 '''
   if len(argv) == 0:
-    db = Database()
-    db.load()
+    db = Database.getDB()
     for v in db.data.values():
       _download(v['id'], **kwargs)
   else:
@@ -177,8 +174,7 @@ def list_(id_=None):
   e.g.
     n l 0
   '''
-  db = Database()
-  db.load()
+  db = Database.getDB()
   if id_:
     db.show_by_id(id_)
   else:
@@ -192,8 +188,7 @@ def remove(*ids):
     n remove 0
     n r 0 1 2
   '''
-  db = Database()
-  db.load()
+  db = Database.getDB()
   for i in ids:
     d = db.remove_by_id(i)
     if d:
@@ -213,6 +208,7 @@ def help_(cmd='h'):
 
 command:
   download  download books.
+  update    currently this is same with download
   remove    remove download files by id
   list      list information of download books (e.g. id)
   support   list support websites
