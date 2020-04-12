@@ -5,7 +5,6 @@ from bs4 import BeautifulSoup
 import os
 import time
 import multiprocessing
-import html2text
 
 _RAW = 'raw'
 
@@ -159,20 +158,3 @@ class NovelDownloader(object):
     fmt = '{{0:{}}}/{{1}} fail.'.format(len(str(total)))
     print(fmt.format(total-success, total))
 
-  @timelog
-  def raw2text(self):
-    h = html2text.HTML2Text()
-    h.ignore_links = True
-    name = self.get_book_folder() + '.txt'
-    textfile = self.get_book_dir([name])
-    raw_dir = self.get_book_dir([_RAW])
-    
-    with open(textfile, 'w', encoding='utf-8') as fout:
-      all_htmls = [os.path.join(raw_dir, h) for h in os.listdir(raw_dir)]
-      total = len(all_htmls)
-      for idx, html in enumerate(all_htmls, start=1):
-        print('{}/{}'.format(idx, total), end='\r')
-        with open(html, 'r', encoding ='utf-8') as fin:
-          lines = fin.read()
-          fout.write(h.handle(lines))
-      print ('')

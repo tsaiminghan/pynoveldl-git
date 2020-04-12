@@ -4,9 +4,10 @@ from bs4 import BeautifulSoup
 from shutil import rmtree
 from .database import Database
 from .common import url_check
+from .novel_convert import *
 
 class Command(object):
-  _options = [ 'download', 'remove', 'list_', 'support', 'test', 'info']
+  _options = [ 'download', 'update', 'remove', 'list_', 'support', 'test', 'info']
   cmd = 'help_'
   
   def __init__(self, *argv, **kwargs):
@@ -54,17 +55,22 @@ def _download(booklink, **kwargs):
   
   mydl.get_chapter_list()
   mydl.dl_all_chapters()
-  mydl.raw2text()
-  
+     
   db = Database()
   db.load()  
   d = db.item(mydl)
+
+  raw2text(d)
+  raw2aozora(d)
+  aozora2epub(d)
+  epub2mobi(d)
+  
   db.add(d)
   db.dump()
 
 def download(*argv, **kwargs):
-  '''Usage: n <url>|[<id>...]|all
-  use 'n l' to check id of book
+  '''Usage: n download <url>|[<id>...]
+  use 'n list' to check id of book
 
   download book by url
   e.g.
@@ -74,22 +80,31 @@ def download(*argv, **kwargs):
   <id>
     update the id of books.
     e.g.
-      n u 0 1 2
-
-  all
-    update all of books
-    e.g.
-      n u all
-      n u a  
+      n d 0 1 2
 '''
-  if len(argv) == 1 and argv in ('all', 'a'):
+  if len(argv) == 0:
     db = Database()
     db.load()
     for v in db.data.values():
       _download(v['id'], **kwargs)
   else:
     for id_ in argv:
-      _download(id_, **kwargs)    
+      _download(id_, **kwargs)
+
+def update(*argv, **kwargs):
+  '''Usage: n update [<id>...]
+
+    update ids of books
+    e.g.
+      n update 0
+      n u 0 1
+
+    update all of books
+    e.g.
+      n update
+      n u
+'''
+  download(*argv, **kwargs)
   
 def test(*argv):
 
@@ -121,6 +136,13 @@ def info():
   pip install BeautifulSoup
   pip install requests
   pip install html2text
+
+3. transter to epub and mobi, need below enviroment.
+  AozoraEpub3  (need Java)
+  https://w.atwiki.jp/hmdev/pages/21.html
+ 
+  KindleGen  
+  https://www.amazon.com/gp/feature.html?docId=1000765211
 
 my enviroment is:
   Window8

@@ -24,6 +24,40 @@ class _base(object):
       with open(self.filename, 'w', encoding='utf-8') as f:
         yaml.dump(data, f, default_flow_style=False, allow_unicode=True)
 
+class _global(_base):
+  yamlfile = os.path.join('config', 'globals.yaml')
+  def __init__(self):    
+    super().__init__(self.yamlfile)
+    for k, v in self.load().items():
+      setattr(self, k, v)
+
+class _aozora(_global):
+  yamlfile = os.path.join('config', 'aozora.yaml')
+  def __init__(self):
+    super().__init__()
+          
+  def title(self, text):
+    return '{}{}{}\n\n'.format(
+        self.TITLE_START,
+        text,
+        self.TITLE_END)
+
+  def section(self, text):
+    return '{}{}\n'.format(self.SECTION_START, text)
+
+  def bookinfo(self, **kwargs):
+    intro = '{0}\nwebsite:\n<a href="{1}">{1}</a>\n{0}\n{2}\n'.format(
+        self.SECTION_LINE,
+        kwargs['url'],
+        self.CAHANGE_PAGE)
+      
+    return '{}\n{}\n{}\n'.format(
+        kwargs['bookname'],
+        kwargs['author'],
+        intro)
+     
+AOZORA = _aozora()
+GLOBAL = _global()
 
 class novelsettings(_base):
 

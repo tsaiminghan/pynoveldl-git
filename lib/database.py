@@ -52,11 +52,11 @@ class Database(_base):
   def list(self):
     color = MAGENTA()
     print ('{0:^4} | {1:^10} | {2:>5} | {3}'.format('ID', 'DATE', 'CHAPS', 'TITLE'))
+    now = datetime.now()
     for v in self.data.values():
 
-      last_check = datetime.strptime(v['last_check'], _tfmt)
       last_update = datetime.strptime(v['last_update'], _tfmt)
-      flag_new = (last_check - last_update) <= timedelta(days=1)
+      flag_new = (now - last_update) <= timedelta(hours=8)
                       
       print ('{0:>4} | {1:^10} | {2:>5} | {3}'.format(
         v['id'],
