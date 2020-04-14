@@ -5,9 +5,19 @@ from .common import timelog
 from .novel_downloader import _RAW
 from .settings import AOZORA, GLOBAL
 from types import SimpleNamespace
-from subprocess import Popen, PIPE, run
+from subprocess import Popen, PIPE, STDOUT
 from shutil import copyfile, move
 import tempfile
+
+def _run_cmd(cmd, stdout=PIPE, stderr=STDOUT, **kwargs):
+  print ('cmd: {}'.format(cmd))
+  p = Popen(cmd, stdout=stdout, stderr=stderr, **kwargs)
+
+  while p.poll() is None:
+    line = p.stdout.readline().strip()
+    if line:
+      print(line.decode('utf-8'))
+  return p.returncode
 
 @timelog
 def raw2text(novel_dict):
@@ -33,18 +43,13 @@ def raw2aozora(novel_dict):
   h = html2text.HTML2Text()
   h.ignore_links = True
 
-  author = novel_dict['author']
-  bookname = novel_dict['bookname']
   book_dir = novel_dict['dir']
   name = os.path.basename(book_dir) + '-aozora.txt'
   textfile = os.path.join(book_dir, name)
   raw_dir = os.path.join(book_dir, _RAW)  
 
   with open(textfile, 'w', encoding='utf-8') as fout:
-
-    
-    fout.write(AOZORA.bookinfo(**novel_dict))
-    
+    fout.write(AOZORA.bookinfo(**novel_dict))   
     all_htmls = os.listdir(raw_dir)
     total = len(all_htmls)
     for idx, html in enumerate(all_htmls, start=1):
@@ -57,9 +62,7 @@ def raw2aozora(novel_dict):
         lines = h.handle(fin.read())
         fout.write(AOZORA.title(title))
         for line in lines.splitlines():
-          if len(line) != 0:
-            line = AOZORA.section(line)
-          fout.write(line)
+          fout.write(AOZORA.section(line.strip()))
     print ('')
 
 class _tmp(object):
@@ -83,23 +86,25 @@ copy them to non-unicode path.
 
 @timelog
 def epub2mobi(novel_dict):
+  if not GLOBAL.kindlegen_path:
+    return
+  
   book_dir = novel_dict['dir']
   name = os.path.basename(book_dir) + '.epub'
   epub = os.path.join(book_dir, name)
   tmp = _tmp(epub, suffix='.epub')
-    
-  kindlegen = os.path.join(GLOBAL.AozoraEpub3_path, 'kindlegen.exe')
+  
+  kindlegen = os.path.join(GLOBAL.kindlegen_path, 'kindlegen.exe')
   cmd = '{} {} -{}'.format(kindlegen, tmp, GLOBAL.kindlegen_compresslevel)
 
-  print (cmd)
-  p = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)  
-  stdout, stderr = p.communicate('')  
-  print((stdout + stderr).decode('utf-8'), end='')
-    
+  _run_cmd(cmd)
+
   move(tmp[0:-5] + '.mobi', epub[0:-5] + '.mobi')
 
 @timelog
 def aozora2epub(novel_dict):
+  if not GLOBAL.AozoraEpub3_path:
+    return
   
   book_dir = novel_dict['dir']
   name = os.path.basename(book_dir) + '-aozora.txt'
@@ -117,11 +122,8 @@ def aozora2epub(novel_dict):
     cmd += ' -hor'  
   cmd += ' "{}"'.format(tmp)
 
-  print (cmd)
   os.chdir(jar_path)  
-  p = Popen(cmd, stdout=PIPE, stdin=PIPE, stderr=PIPE)  
-  stdout, stderr = p.communicate('')  
-  print((stdout + stderr).decode('utf-8'), end='')
+  _run_cmd(cmd)
   os.chdir(oridir)
   
   move(tmp[0:-4] + '.epub', aozoratext[0:-11] + '.epub')

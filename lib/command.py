@@ -1,107 +1,31 @@
-import importlib
 import sys, os
 from bs4 import BeautifulSoup
 from shutil import rmtree
 from .database import Database
-from .common import url_check
 from .novel_convert import *
+from .download import download, update
 
 class Command(object):
-  _options = [ 'download', 'update', 'remove', 'list_', 'support', 'test', 'info']
-  cmd = 'help_'
+  _options = [ 'convert', 'download', 'update', 'remove',
+               'list_', 'support', 'test', 'init', 'settings', 'help_']
+
+  def match(cmd, default=None):
+    cmds = [ opt for opt in Command._options if opt.startswith(cmd)]
+    if len(cmds) == 1:      
+      return cmds[0]
+    print ('WARN: "{}" matches more than one command: {}\n'.format(cmd, cmds))
+    return default
   
   def __init__(self, *argv, **kwargs):
     self.argv = argv
     self.kwargs = kwargs
     if len(argv) > 0:
-     cmd = argv[0]
-     cmds = [ opt for opt in self._options if opt.startswith(cmd)]
-  
-     if len(cmds) == 1:
-       self.cmd = cmds[0]    
+      cmd = argv[0]
+      self.cmd = Command.match(cmd, 'help_')
     
   def __call__(self):
     return eval(self.cmd)(*self.argv[1:], **self.kwargs)  
 
-def _select(booklink, **kwargs):
-
-  if booklink.isdigit():
-    # this is book id
-    db = Database.getDB()
-    d = db.find_item_by_id(booklink)    
-    booklink = d['url']
-    
-  url = booklink.split('/')[2]
-  mod_name = url.replace('.', '_')
-  
-  mod = importlib.import_module('novelwebsite.' + mod_name)
-  cls_mydl = getattr(mod, 'mydl')
-  
-  mydl = cls_mydl(url_check(booklink))
-  
-  # this is for debug, append debug argv to class
-  for k, v in kwargs.items():
-    setattr(mydl, k , v)
-  return mydl
-
-def _download(booklink, **kwargs):
-  try:
-    mydl = _select(booklink, **kwargs)
-  except ImportError as e:
-    print (e)
-    print ("Please run command 'n support' to check upport website")
-    return
-  
-  mydl.get_chapter_list()
-  mydl.dl_all_chapters()
-     
-  db = Database.getDB()
-  d = db.item(mydl)
-
-  raw2text(d)
-  raw2aozora(d)
-  aozora2epub(d)
-  epub2mobi(d)
-  
-  db.add(d)
-  db.dump()
-
-def download(*argv, **kwargs):
-  '''Usage: n download <url>|[<id>...]
-  use 'n list' to check id of book
-
-  download book by url
-  e.g.
-    n download http://www.b5200.net/101_101696/
-    n d http://www.b5200.net/101_101696/
-
-  <id>
-    update the id of books.
-    e.g.
-      n d 0 1 2
-'''
-  if len(argv) == 0:
-    db = Database.getDB()
-    for v in db.data.values():
-      _download(v['id'], **kwargs)
-  else:
-    for id_ in argv:
-      _download(id_, **kwargs)
-
-def update(*argv, **kwargs):
-  '''Usage: n update [<id>...]
-
-    update ids of books
-    e.g.
-      n update 0
-      n u 0 1
-
-    update all of books
-    e.g.
-      n update
-      n u
-'''
-  download(*argv, **kwargs)
   
 def test(*argv):
 
@@ -122,29 +46,25 @@ def test(*argv):
     Command(*argv, debug_chaps_limit=10)()
     
 
-def info():
+def init():
   '''setup information.
 '''
-  print ('''enviroment setup step:
-1. install python3, and then setup python and pip enviroemnt path.
-2. install below python module.
-  pip install PyYAML
-  pip install lxml
-  pip install BeautifulSoup
-  pip install requests
-  pip install html2text
+  from .settings import GLOBAL
+  AozoraEpub3_path = input('The path of AozoraEpub3: ')
 
-3. transter to epub and mobi, need below enviroment.
-  AozoraEpub3  (need Java)
-  https://w.atwiki.jp/hmdev/pages/21.html
- 
-  KindleGen  
-  https://www.amazon.com/gp/feature.html?docId=1000765211
+  GLOBAL.AozoraEpub3_path = None
+  GLOBAL.kindlegen_path = None
 
-my enviroment is:
-  Window8
-  Python 3.8.2
-''')
+  if os.path.exists(os.path.join(AozoraEpub3_path, 'AozoraEpub3.jar')):
+    print ('find AozoraEpub3, set it')
+    GLOBAL.AozoraEpub3_path = AozoraEpub3_path
+  
+  if os.path.exists(os.path.join(AozoraEpub3_path, 'kindlegen.exe')):
+    print ('find kindlegen, set it')
+    GLOBAL.kindlegen_path = AozoraEpub3_path
+    
+  GLOBAL.dump()
+    
 
 def support():
   '''Usage: n support
@@ -199,8 +119,65 @@ def remove(*ids):
   db.update()
   db.dump()
 
+def convert(id_, *argv):
+  '''n convert <id> txt|aozora|epub|mobi
+''' 
+  db = Database.getDB()
+  d = db.find_item_by_id(id_)
+
+  for ext in argv:
+    if 'txt'.startswith(ext):
+      raw2text(d)
+    elif 'aozora'.startswith(ext):
+      raw2aozora(d)
+    elif 'epub'.startswith(ext):
+      aozora2epub(d)
+    elif 'mobi'.startswith(ext):
+      epub2mobi(d)
+
+def settings(*argv, **kwargs):
+  '''Usage: n settings <module> list|put|get|remove [key...] [value]
+  chagne the yaml settings. you alos can edit yaml files by notepad..etc.
+
+  <module>
+    1. global
+    2. database
+
+  list [keys..]
+    print the target dict
+    e.g.
+    n settings database list 0 bookname
+    n se d list 0 bookname
+    n se g list
+
+  get [keys..]
+    return the target dict
+
+  remove [keys..]
+    remove the target from dict
+
+  put [key..] value
+    add or chagne the dict
+
+    e.g.
+    n se database put 0 bookname "this is a book"
+'''
+  # 1. GLOBAL
+  # 2. config\database.yaml
+  from .settings import _settings
+  mod, func = argv[0:2]
+
+  if 'global'.startswith(mod):
+    from .settings import GLOBAL as base
+    base.load()
+  else:
+    base = Database.getDB()
+
+  s = _settings(base)
+  getattr(s, func)(*argv[2:])
+ 
 def help_(cmd='h'):
-  cmd = Command(cmd).cmd
+  cmd = Command.match(cmd)
   if cmd != help_.__name__:
     print (eval(cmd).__doc__)
   else:
