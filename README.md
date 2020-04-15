@@ -18,6 +18,9 @@ enviroment setup step:<br>
   <a href="https://www.amazon.com/gp/feature.html?docId=1000765211">https://www.amazon.com/gp/feature.html?docId=1000765211</a><br>
   put them together, and set the path to AozoraEpub3_path in globals.yaml.
 
+4. set path for the AozoraEpub3, edit config/globals.yaml or excute below command to setup. <br>
+- n.bat init
+
 my enviroment is:<br>
   Window8<br>
   Python 3.8.2<br>
