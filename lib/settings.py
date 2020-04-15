@@ -68,7 +68,7 @@ class _settings(object):
     return data   
 
 class _global(_base):
-  yamlfile = os.path.join(GLOBALS_YAML)
+  yamlfile = GLOBALS_YAML
   def __init__(self):
     super().__init__(self.yamlfile)
     self.load()
@@ -85,7 +85,7 @@ class _global(_base):
 
 class _aozora(_global):
   linesep = '\n'
-  yamlfile = os.path.join(AOZORA_YAML)
+  yamlfile = AOZORA_YAML
   def __init__(self):
     super().__init__()
           
