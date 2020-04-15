@@ -2,7 +2,7 @@ import html2text
 import os
 import sys
 from .common import timelog
-from .constant import RAW
+from .constant import *
 from .settings import AOZORA, GLOBAL
 from types import SimpleNamespace
 from subprocess import Popen, PIPE, STDOUT
@@ -23,7 +23,7 @@ def _run_cmd(cmd, stdout=PIPE, stderr=STDOUT, **kwargs):
 def raw2text(novel_dict):
   h = html2text.HTML2Text()
   h.ignore_links = True
-  book_dir = novel_dict['dir']
+  book_dir = novel_dict[K_DIR]
   name = os.path.basename(book_dir) + '.txt'
   textfile = os.path.join(book_dir, name)
   raw_dir = os.path.join(book_dir, RAW)
@@ -43,7 +43,7 @@ def raw2aozora(novel_dict):
   h = html2text.HTML2Text()
   h.ignore_links = True
 
-  book_dir = novel_dict['dir']
+  book_dir = novel_dict[K_DIR]
   name = os.path.basename(book_dir) + '-aozora.txt'
   textfile = os.path.join(book_dir, name)
   raw_dir = os.path.join(book_dir, RAW)  
@@ -89,7 +89,7 @@ def epub2mobi(novel_dict):
   if not GLOBAL.kindlegen_path:
     return
   
-  book_dir = novel_dict['dir']
+  book_dir = novel_dict[K_DIR]
   name = os.path.basename(book_dir) + '.epub'
   epub = os.path.join(book_dir, name)
   tmp = _tmp(epub, suffix='.epub')
@@ -106,7 +106,7 @@ def aozora2epub(novel_dict):
   if not GLOBAL.AozoraEpub3_path:
     return
   
-  book_dir = novel_dict['dir']
+  book_dir = novel_dict[K_DIR]
   name = os.path.basename(book_dir) + '-aozora.txt'
   aozoratext = os.path.join(book_dir, name)
   tmp = _tmp(aozoratext, suffix='.txt')
@@ -119,7 +119,10 @@ def aozora2epub(novel_dict):
   if GLOBAL.AozoraEpub3_device:
     cmd += ' -device {}'.format(GLOBAL.AozoraEpub3_device)
   if GLOBAL.AozoraEpub3_hor:
-    cmd += ' -hor'  
+    cmd += ' -hor'
+  if novel_dict.get(K_COVER):
+    cover = os.path.abspath(novel_dict.get(K_COVER))
+    cmd += ' -c {}'.format(cover)
   cmd += ' "{}"'.format(tmp)
 
   #_run_cmd(cmd, cwd=jar_path)

@@ -23,6 +23,7 @@ K_LTUPTIME = 'last_update'
 K_LTCHK = 'last_check'
 K_ID = 'id'
 K_DIR = 'dir'
+K_COVER = 'cover'
 
 # keys in config/novelwebsite/*.yaml
 K_DOWNLOADER = 'Downloader'

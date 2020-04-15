@@ -131,7 +131,7 @@ def remove(*ids):
 def convert(id_, *argv):
   '''n convert <id> txt|aozora|epub|mobi
 ''' 
-  d = Database.geItemById(id_)
+  d = Database.getItemById(id_)
   if not d:
     print ('not find book id:', id_)
     return
