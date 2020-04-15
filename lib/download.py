@@ -2,6 +2,7 @@ import importlib
 from .common import url_check
 from .database import Database
 from .novel_convert import *
+from .constant import *
 
 def _select(booklink, **kwargs):
 
@@ -9,12 +10,12 @@ def _select(booklink, **kwargs):
     # this is book id
     db = Database.getDB()
     d = db.find_item_by_id(booklink)    
-    booklink = d['url']
+    booklink = d[K_URL]
     
   url = booklink.split('/')[2]
   mod_name = url.replace('.', '_')
   
-  mod = importlib.import_module('novelwebsite.' + mod_name)
+  mod = importlib.import_module(NOVELWEBSITE + '.' + mod_name)
   cls_mydl = getattr(mod, 'mydl')
   
   mydl = cls_mydl(url_check(booklink))
@@ -63,7 +64,7 @@ def download(*argv, **kwargs):
   if len(argv) == 0:
     db = Database.getDB()
     for v in db.data.values():
-      _download(v['id'], **kwargs)
+      _download(v[K_ID], **kwargs)
   else:
     for id_ in argv:
       _download(id_, **kwargs)

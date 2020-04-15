@@ -3,8 +3,8 @@ from .color_console import MAGENTA
 import os
 from collections import OrderedDict
 from datetime import datetime, timedelta
+from .constant import *
 
-_listdb = os.path.join('config', 'database.yaml')
 _tfmt = '%Y-%m-%d %H:%M'
 
 
@@ -17,8 +17,11 @@ class Database(_base):
       Database.db = db    
     return Database.db
 
+  def getItemById(id_):
+    return Database.getDB().find_item_by_id(id_)    
+
   def __init__(self):
-    super().__init__(_listdb)  
+    super().__init__(DATABASES_YAML)  
 
   '''
   0:
@@ -34,16 +37,16 @@ class Database(_base):
   '''
   def item(self, mydl):
     return {
-    'author': mydl.author,
-    'bookname': mydl.bookname,
-    'url': mydl.booklink,
-    'chaps': len(mydl.all_chaps),
-    'dir': mydl.get_book_dir(),
-    'update_time': mydl.update_time,
-    'last_check': datetime.strftime(datetime.now(), _tfmt)
+    K_AUTHOR: mydl.author,
+    K_BOOKNAME: mydl.bookname,
+    K_URL: mydl.booklink,
+    K_CHAPS: len(mydl.all_chaps),
+    K_DIR: mydl.get_book_dir(),
+    K_UPTIME: mydl.update_time,
+    K_LTCHK: datetime.strftime(datetime.now(), _tfmt)
    }
 
-  def load(self, filename=_listdb):
+  def load(self, filename=DATABASES_YAML):
     data = super().load(filename)
     od = OrderedDict()   
     keys = sorted(data.keys(), key=int)
@@ -62,14 +65,14 @@ class Database(_base):
     now = datetime.now()
     for v in self.data.values():
 
-      last_update = datetime.strptime(v['last_update'], _tfmt)
+      last_update = datetime.strptime(v[K_LTUPTIME], _tfmt)
       flag_new = (now - last_update) <= timedelta(hours=8)
                       
       print ('{0:>4} | {1:^10} | {2:>5} | {3}'.format(
-        v['id'],
-        v['update_time'].split()[0],
-        v['chaps'],
-        v['bookname']), end='')
+        v[K_ID],
+        v[K_UPTIME].split()[0],
+        v[K_CHAPS],
+        v[K_BOOKNAME]), end='')
       
       color.start(flag_new)
       print ('*new' if flag_new else '')      
@@ -87,7 +90,7 @@ class Database(_base):
 
   def find_key_by_id(self, id):
     for k, v in self.data.items():      
-      if v['id'] == id:
+      if v[K_ID] == id:
         return k
       
   def find_item_by_id(self, id_):
@@ -96,27 +99,27 @@ class Database(_base):
 
   def find_key_by_url(self, url):
     for k, v in self.data.items():
-      if v['url'] == url:
+      if v[K_URL] == url:
         return k
 
   def add(self, d):
-    k = self.find_key_by_url(d['url'])
+    k = self.find_key_by_url(d[K_URL])
     if k:
-      if self.data[k]['chaps'] != d['chaps']:
+      if self.data[k][K_CHAPS] != d[K_CHAPS]:
         # new chapters
-        d['last_update'] = d['last_check']      
+        d[K_LTUPTIME] = d[K_LTCHK]      
       self.data[k].update(d)
     else:
       id_ = str(len(self.data))
-      d['id'] = id_
-      d['last_update'] = d['last_check']
+      d[K_ID] = id_
+      d[K_LTUPTIME] = d[K_LTCHK]
       self.data[id_] = d
 
   def update(self):
     od = OrderedDict()
     for idx, (k, v) in enumerate(self.data.items()):
       id = str(idx)
-      v['id'] = id
+      v[K_ID] = id
       od[id] = v
     self.data = od
     
@@ -126,7 +129,6 @@ class Database(_base):
     return d
 
   def remove(self, d):
-    k = self.find_key_by_url(d['url'])
+    k = self.find_key_by_url(d[K_URL])
     if k:
       self.remove_by_id(k)
-  

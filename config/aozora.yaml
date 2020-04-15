@@ -1,4 +1,5 @@
 ﻿SEPARATOR_LINE: ［＃区切り線］
 CHANGE_PAGE: ［＃改ページ］
 TITLE_END: ［＃中見出し終わり］
-TITLE_START: ［＃３字下げ］［＃中見出し］
+#TITLE_START: ［＃３字下げ］［＃中見出し］
+TITLE_START: ［＃中見出し］

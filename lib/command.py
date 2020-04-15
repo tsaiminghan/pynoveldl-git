@@ -4,16 +4,19 @@ from shutil import rmtree
 from .database import Database
 from .novel_convert import *
 from .download import download, update
+from .constant import *
+from .browser import *
 
 class Command(object):
   _options = [ 'convert', 'download', 'update', 'remove',
-               'list_', 'support', 'test', 'init', 'settings', 'help_']
-
+               'list_', 'support', 'test', 'init', 'settings',
+               'browser', 'folder', 'help_']
+  cmd = 'help_'
   def match(cmd, default=None):
     cmds = [ opt for opt in Command._options if opt.startswith(cmd)]
     if len(cmds) == 1:      
       return cmds[0]
-    print ('WARN: "{}" matches more than one command: {}\n'.format(cmd, cmds))
+    print ('WARN: "{}" need to matche 1 command: {}'.format(cmd, cmds))
     return default
   
   def __init__(self, *argv, **kwargs):
@@ -21,11 +24,11 @@ class Command(object):
     self.kwargs = kwargs
     if len(argv) > 0:
       cmd = argv[0]
-      self.cmd = Command.match(cmd, 'help_')
+      self.cmd = Command.match(cmd)
     
   def __call__(self):
-    return eval(self.cmd)(*self.argv[1:], **self.kwargs)  
-
+    if self.cmd:
+      return eval(self.cmd)(*self.argv[1:], **self.kwargs)  
   
 def test(*argv):
 
@@ -50,6 +53,8 @@ def init():
   '''setup information.
 '''
   from .settings import GLOBAL
+  import subprocess as sp
+  from subprocess import DEVNULL
   AozoraEpub3_path = input('The path of AozoraEpub3: ')
 
   GLOBAL.AozoraEpub3_path = None
@@ -58,10 +63,14 @@ def init():
   if os.path.exists(os.path.join(AozoraEpub3_path, 'AozoraEpub3.jar')):
     print ('find AozoraEpub3, set it')
     GLOBAL.AozoraEpub3_path = AozoraEpub3_path
+    try:
+      sp.check_call('java -version', stderr=DEVNULL, stdout=DEVNULL)
+    except:
+      print ('WARN: AozoraEpub3 need java enviroment')
   
   if os.path.exists(os.path.join(AozoraEpub3_path, 'kindlegen.exe')):
     print ('find kindlegen, set it')
-    GLOBAL.kindlegen_path = AozoraEpub3_path
+    GLOBAL.kindlegen_path = AozoraEpub3_path    
     
   GLOBAL.dump()
     
@@ -112,7 +121,7 @@ def remove(*ids):
   for i in ids:
     d = db.remove_by_id(i)
     if d:
-      print ('rmtree {}'.format(d['dir']))
+      print ('rmtree {}'.format(d[K_DIR]))
       rmtree(d['dir'], ignore_errors=True)
     else:
       print ('unknow id {}'.format(i))
@@ -122,9 +131,11 @@ def remove(*ids):
 def convert(id_, *argv):
   '''n convert <id> txt|aozora|epub|mobi
 ''' 
-  db = Database.getDB()
-  d = db.find_item_by_id(id_)
-
+  d = Database.geItemById(id_)
+  if not d:
+    print ('not find book id:', id_)
+    return
+  
   for ext in argv:
     if 'txt'.startswith(ext):
       raw2text(d)
@@ -164,17 +175,31 @@ def settings(*argv, **kwargs):
 '''
   # 1. GLOBAL
   # 2. config\database.yaml
-  from .settings import _settings
+  from .settings import _settings, novelsettings
+  import glob
   mod, func = argv[0:2]
 
   if 'global'.startswith(mod):
     from .settings import GLOBAL as base
     base.load()
-  else:
+  elif 'database'.startswith(mod):
     base = Database.getDB()
-
+  else:
+    _dir = CONF_NOVELWEBSITE
+    sites = []
+    for site in glob.glob1(_dir, '*.yaml'):
+      if mod in site:     
+         sites.append(site)
+    if len(sites) == 1:
+      base = novelsettings(os.path.join(_dir, sites[0]))
+    else:
+      print ('can not find only one yaml:')
+      print (*sites, sep='\n')
+      return
+        
   s = _settings(base)
   getattr(s, func)(*argv[2:])
+
  
 def help_(cmd='h'):
   cmd = Command.match(cmd)
@@ -184,6 +209,7 @@ def help_(cmd='h'):
     print('''Usage: n <command> [arguments...]
 
 command:
+  bowser    open the book url.
   download  download books.
   update    currently this is same with download
   remove    remove download files by id

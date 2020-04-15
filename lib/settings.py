@@ -1,5 +1,6 @@
 import yaml
 import os
+from .constant import *
 
 class _base(object):
     data = {}
@@ -67,7 +68,7 @@ class _settings(object):
     return data   
 
 class _global(_base):
-  yamlfile = os.path.join('config', 'globals.yaml')
+  yamlfile = os.path.join(GLOBALS_YAML)
   def __init__(self):
     super().__init__(self.yamlfile)
     self.load()
@@ -84,7 +85,7 @@ class _global(_base):
 
 class _aozora(_global):
   linesep = '\n'
-  yamlfile = os.path.join('config', 'aozora.yaml')
+  yamlfile = os.path.join(AOZORA_YAML)
   def __init__(self):
     super().__init__()
           
@@ -106,8 +107,8 @@ class _aozora(_global):
         self.linesep)
       
     return '{0}{3}{1}{3}{2}{3}'.format(
-        kwargs['bookname'],
-        kwargs['author'],
+        kwargs[K_BOOKNAME],
+        kwargs[K_AUTHOR],
         intro,
         self.linesep)
      
@@ -124,15 +125,15 @@ class novelsettings(_base):
 
   @property
   def Downloader(self):
-    return self.get_by_key('Downloader')
+    return self.get_by_key(K_DOWNLOADER)
 
   @property
   def NovelDownloader(self):
-    return self.get_by_key('NovelDownloader')
+    return self.get_by_key(K_NOVELDOWNLOADER)
 
   @property
   def Website(self):
-    return self.get_by_key('Website')
+    return self.get_by_key(K_WEBSITE)
 
 if __name__ == '__main__':
   settings = novelsettings('..\\config\\novelwebsite\\www_b5200_net.yml')

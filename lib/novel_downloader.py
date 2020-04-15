@@ -5,8 +5,7 @@ from bs4 import BeautifulSoup
 import os
 import time
 import multiprocessing
-
-_RAW = 'raw'
+from .constant import *
 
 def _makedirs(path):
   if not os.path.exists(path):
@@ -20,14 +19,13 @@ class NovelDownloader(object):
   
   author = 'na'
   bookname = 'na'
-  dl_path = os.path.join('data', 'website')
+  dl_path = '.'
 
   def load_settings(self, yamlfile=None):
 
     if not yamlfile:
       url = self.booklink.split('/')[2]
-      yamlfile = os.path.join('config',
-                              'novelwebsite',
+      yamlfile = os.path.join(CONF_NOVELWEBSITE,
                               url + '.yaml')
     
     s = novelsettings(yamlfile)
@@ -36,7 +34,7 @@ class NovelDownloader(object):
     for k, v in s.NovelDownloader.items():
       setattr(self, k, v)
 
-    self.dl_path = os.path.join('data', s.Website['url'])
+    self.dl_path = os.path.join(DATA, s.Website[K_URL])
   
   def __init__(self, **kwargs):
     self.downloader = Downloader(**kwargs)
@@ -97,17 +95,17 @@ class NovelDownloader(object):
     self.bookname = self.find_bookname(soup)
     self.update_time = self.find_update_time(soup)
     self.all_chaps = self.chapter_list_filter(soup)[0:self.debug_chaps_limit]
-    print (' {0:11} | {1}'.format('author', self.author))
-    print (' {0:11} | {1}'.format('bookname', self.bookname))
-    print (' {0:11} | {1}'.format('url', self.booklink))
-    print (' {0:11} | {1}'.format('update_time', self.update_time))
-    print (' {0:11} | {1}'.format('chaps', len(self.all_chaps)))    
+    print (' {0:11} | {1}'.format(K_AUTHOR, self.author))
+    print (' {0:11} | {1}'.format(K_BOOKNAME, self.bookname))
+    print (' {0:11} | {1}'.format(K_URL, self.booklink))
+    print (' {0:11} | {1}'.format(K_UPTIME, self.update_time))
+    print (' {0:11} | {1}'.format(K_CHAPS, len(self.all_chaps)))    
 
   def dl_chapter(self, idx, title, link):
     #print ('{} {} {}'.format(idx, title, link))
     
     filename = os.path.join(self.get_book_dir(),
-                            'raw', '{0:04} {1}.html'.format(idx, title))
+                            RAW, '{0:04} {1}.html'.format(idx, title))
     if os.path.exists(filename):
       return True
     
@@ -134,7 +132,7 @@ class NovelDownloader(object):
     multiprocessing.freeze_support()  # for windows, RuntimeError
     pool = multiprocessing.Pool(self.pool_num)
 
-    _makedirs(self.get_book_dir([_RAW]))
+    _makedirs(self.get_book_dir([RAW]))
 
     result = []
     for idx, (title, link) in enumerate(self.all_chaps, start=1):

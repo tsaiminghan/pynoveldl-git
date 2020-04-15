@@ -2,7 +2,7 @@ import html2text
 import os
 import sys
 from .common import timelog
-from .novel_downloader import _RAW
+from .constant import RAW
 from .settings import AOZORA, GLOBAL
 from types import SimpleNamespace
 from subprocess import Popen, PIPE, STDOUT
@@ -10,7 +10,7 @@ from shutil import copyfile, move
 import tempfile
 
 def _run_cmd(cmd, stdout=PIPE, stderr=STDOUT, **kwargs):
-  print ('cmd: {}'.format(cmd))
+  #print ('cmd: {}'.format(cmd))
   p = Popen(cmd, stdout=stdout, stderr=stderr, **kwargs)
 
   while p.poll() is None:
@@ -26,7 +26,7 @@ def raw2text(novel_dict):
   book_dir = novel_dict['dir']
   name = os.path.basename(book_dir) + '.txt'
   textfile = os.path.join(book_dir, name)
-  raw_dir = os.path.join(book_dir, _RAW)
+  raw_dir = os.path.join(book_dir, RAW)
 
   with open(textfile, 'w', encoding='utf-8') as fout:
     all_htmls = [os.path.join(raw_dir, h) for h in os.listdir(raw_dir)]
@@ -46,7 +46,7 @@ def raw2aozora(novel_dict):
   book_dir = novel_dict['dir']
   name = os.path.basename(book_dir) + '-aozora.txt'
   textfile = os.path.join(book_dir, name)
-  raw_dir = os.path.join(book_dir, _RAW)  
+  raw_dir = os.path.join(book_dir, RAW)  
 
   with open(textfile, 'w', encoding='utf-8') as fout:
     fout.write(AOZORA.bookinfo(**novel_dict))   
@@ -122,6 +122,7 @@ def aozora2epub(novel_dict):
     cmd += ' -hor'  
   cmd += ' "{}"'.format(tmp)
 
+  #_run_cmd(cmd, cwd=jar_path)
   os.chdir(jar_path)  
   _run_cmd(cmd)
   os.chdir(oridir)
