@@ -86,8 +86,6 @@ copy them to non-unicode path.
 
 @timelog
 def epub2mobi(novel_dict):
-  if not GLOBAL.kindlegen_path:
-    return
   
   book_dir = novel_dict[K_DIR]
   name = os.path.basename(book_dir) + '.epub'
@@ -103,8 +101,6 @@ def epub2mobi(novel_dict):
 
 @timelog
 def aozora2epub(novel_dict):
-  if not GLOBAL.AozoraEpub3_path:
-    return
   
   book_dir = novel_dict[K_DIR]
   name = os.path.basename(book_dir) + '-aozora.txt'

@@ -32,21 +32,30 @@ class Command(object):
   
 def test(*argv):
 
-  if len(argv) == 0:
+  kwargs = {}
+  arg = []
+  for a in argv:
+    if '=' in a:
+      k, v = a.split('=')
+      kwargs[k] = v
+    else:
+      arg.append(a)
+
+  if len(arg) == 0:
     download('http://www.b5200.net/101_101696/')
     return
-  cmd = argv[0]
+  cmd = arg[0]
   if cmd.startswith('http'):
     from .downloader import Downloader
     #from bs4 import BeautifulSoup
     url = cmd
-    dl = Downloader(encoding='gbk', verify=False)
+    dl = Downloader(verify=False, **kwargs)
     r = dl.get(url)
     print (r)
     with open('test.txt', 'w', encoding='utf-8') as f:
       f.write(BeautifulSoup(r.text, 'lxml').prettify())
   else:
-    Command(*argv, debug_chaps_limit=10)()
+    Command(*arg, debug_chaps_limit=10, **kwargs)()
     
 
 def init():
@@ -122,7 +131,7 @@ def remove(*ids):
     d = db.remove_by_id(i)
     if d:
       print ('rmtree {}'.format(d[K_DIR]))
-      rmtree(d['dir'], ignore_errors=True)
+      rmtree(d[K_DIR], ignore_errors=True)
     else:
       print ('unknow id {}'.format(i))
   db.update()
@@ -209,18 +218,20 @@ def help_(cmd='h'):
     print('''Usage: n <command> [arguments...]
 
 command:
-  bowser    open the book url.
+  browser    open the book url.
+  folder    open the book folders
   download  download books.
   update    currently this is same with download
   remove    remove download files by id
-  list      list information of download books (e.g. id)
+  list      list information of books
   support   list support websites
-  info      setup information.
+  init      setup enviroment.
   help      use 'n help <command>' to get command details.
   
-  each command could use head of command string to instead of full command
+  each command could use head words of command string to instead of full command
   e.g. n download <url> -> n d <url>
-       n list -> n l
+       n list           -> n l
+       n support        -> n su
   ''')
 
 if __name__ == '__main__':

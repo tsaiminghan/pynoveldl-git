@@ -9,14 +9,17 @@ class mydl(NovelDownloader):
     self.set_booklink(booklink)
     self.load_settings()
 
+  def chapter_link(self, link):
+    if not link.startswith('http'):
+      link = self.booklink + link
+    return link
+  
   def filter_hrefs(self, href_list):
     all_chaps = href_list.find_all('a')
     odict = OrderedDict()
     for chap in all_chaps:
-      link = chap['href']
-      if not link.startswith('http'):
-        link = self.booklink + link
-        
+      link = self.chapter_link(chap['href'])
+      
       title = str(chap.string)
       if link in odict:
         del odict[link]

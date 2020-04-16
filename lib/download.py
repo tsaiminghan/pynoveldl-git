@@ -3,6 +3,7 @@ from .common import url_check
 from .database import Database
 from .novel_convert import *
 from .constant import *
+from .settings import GLOBAL
 
 def _select(booklink, **kwargs):
 
@@ -41,8 +42,10 @@ def _download(booklink, **kwargs):
 
   raw2text(d)
   raw2aozora(d)
-  aozora2epub(d)
-  epub2mobi(d)
+  if GLOBAL.AozoraEpub3_path:
+    aozora2epub(d)
+    if GLOBAL.kindlegen_path:
+      epub2mobi(d)
   
   db.add(d)
   db.dump()
