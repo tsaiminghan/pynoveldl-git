@@ -14,11 +14,24 @@ class Downloader(object):
     self.kwargs = kwargs
     self.encoding = encoding
 
-  def get(self, link):
+
+  def session_get(self, link, **kwargs):
+    if not hasattr(self, 'session'):
+      self.session = requests.Session()
+    r = self.get(link, self.session, **kwargs)
+    return (r, self.session)
+
+  def get(self, link, mod=requests, **kwargs):
     r = None
+    
+    if kwargs:
+      _kwargs = kwargs
+    else:
+      _kwargs = self.kwargs
+    
     for _ in range(self.retry_time):
-      try:
-        r = requests.get(link, **self.kwargs)
+      try: 
+        r = mod.get(link, **_kwargs)
         r.raise_for_status()
         if r.status_code == 200:
           break
@@ -38,7 +51,7 @@ class Downloader(object):
           
       break
       
-    if r:  
+    if r and not kwargs.get('stream', False):
       r.encoding = self.encoding
     
     return r

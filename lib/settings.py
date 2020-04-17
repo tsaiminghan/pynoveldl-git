@@ -90,14 +90,30 @@ class _aozora(_global):
     super().__init__()
           
   def title(self, text):
-    return '{0}{1}{2}{3}{3}'.format(
-        self.TITLE_START,
+    return '{0}{1}{2}{3}'.format(
+        self.H2_START,
         text,
-        self.TITLE_END,
+        self.H2_END,
         self.linesep)
 
-  def section(self, text):
-    return '{}{}'.format(text, self.linesep)
+  def part(self, text):
+    return '{0}{6}{1}{2}{3}{4}{6}{5}{6}'.format(
+        self.HCENTRAL,
+        self.SHIFT_3,
+        self.H1_START,
+        text,
+        self.H1_END,
+        self.CHANGE_PAGE,
+        self.linesep,
+        )
+
+  def paragraph(self, text):
+    if text:
+      return '{}{}{}'.format(
+        self.INDENT,
+        text,
+        self.linesep)
+    return self.linesep
 
   def bookinfo(self, **kwargs):
     intro = '{0}{3}website:{3}<a href="{1}">{1}</a>{3}{0}{3}{2}{3}'.format(

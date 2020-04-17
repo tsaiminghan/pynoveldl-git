@@ -5,7 +5,6 @@ Downloader:
   headers: 
     user-agent: 'Mozilla/5.0 (Macintosh Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36'
 NovelDownloader:
-  ctl_append_title_when_dl_chapter: false
   ctl_dl_delay: 1
   pool_num: 1
 Website:

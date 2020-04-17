@@ -2,6 +2,7 @@ import os
 
 
 # folder
+IMG = 'img'
 RAW = 'raw'
 DATA = 'data'
 CONF = 'config'

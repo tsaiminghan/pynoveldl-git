@@ -12,14 +12,9 @@ def _makedirs(path):
     os.makedirs(path)  
 
 class NovelDownloader(object):
-  ctl_append_title_when_dl_chapter = False
   ctl_dl_delay = 0
   debug_chaps_limit = -1
   pool_num = 1
-  
-  author = 'na'
-  bookname = 'na'
-  dl_path = '.'
 
   def load_settings(self, yamlfile=None):
 
@@ -61,6 +56,10 @@ class NovelDownloader(object):
     ''' need implement '''
     return 'na'
 
+  def dl_cover(self, soup):
+    ''' need implement '''
+    return ''
+
   def get_book_folder(self):
     if not hasattr(self, '_book_folder'):
       self._book_folder = '[{}] {}'.format(self.author, self.bookname)
@@ -93,8 +92,8 @@ class NovelDownloader(object):
     soup = BeautifulSoup(r.text,'lxml')
     self.author = self.find_author(soup)
     self.bookname = self.find_bookname(soup)
-    self.update_time = self.find_update_time(soup)
     self.all_chaps = self.chapter_list_filter(soup)[0:self.debug_chaps_limit]
+    self.update_time = self.find_update_time(soup)
     print (' {0:11} | {1}'.format(K_AUTHOR, self.author))
     print (' {0:11} | {1}'.format(K_BOOKNAME, self.bookname))
     print (' {0:11} | {1}'.format(K_URL, self.booklink))
@@ -120,8 +119,6 @@ class NovelDownloader(object):
     content = self.chapter_content_filter(soup)
     
     with open(filename, 'w', encoding='utf-8') as f:
-      if self.ctl_append_title_when_dl_chapter:
-        f.write(title)        
       f.write(content)
       return True
     
@@ -132,13 +129,18 @@ class NovelDownloader(object):
     multiprocessing.freeze_support()  # for windows, RuntimeError
     pool = multiprocessing.Pool(self.pool_num)
 
-    _makedirs(self.get_book_dir([RAW]))
+    raw_dir = self.get_book_dir([RAW])
+    _makedirs(raw_dir)
 
     result = []
-    for idx, (title, link) in enumerate(self.all_chaps, start=1):
+    for idx, (title, link, *part) in enumerate(self.all_chaps, start=1):
       #print ('{} {} {}'.format(idx, title, link))
       res = pool.apply_async(self.dl_chapter, args=(idx, title, link))
-      result.append(res)      
+      result.append(res)
+      if part and part[0]:
+        filename = self.get_book_dir([RAW, '{0:04} ---- {1}.part'.format(idx, part[0])])
+        with open(filename, 'w') as f:
+          pass
     pool.close()
     #pool.join()
 

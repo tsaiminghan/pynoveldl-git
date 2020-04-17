@@ -37,14 +37,15 @@ class Database(_base):
   '''
   def item(self, mydl):
     return {
-    K_AUTHOR: mydl.author,
-    K_BOOKNAME: mydl.bookname,
-    K_URL: mydl.booklink,
-    K_CHAPS: len(mydl.all_chaps),
-    K_DIR: mydl.get_book_dir(),
-    K_UPTIME: mydl.update_time,
-    K_LTCHK: datetime.strftime(datetime.now(), _tfmt)
-   }
+      K_AUTHOR: mydl.author,
+      K_BOOKNAME: mydl.bookname,
+      K_URL: mydl.booklink,
+      K_CHAPS: len(mydl.all_chaps),
+      K_DIR: mydl.get_book_dir(),
+      K_UPTIME: mydl.update_time,
+      K_LTCHK: datetime.strftime(datetime.now(), _tfmt),
+      K_COVER: getattr(mydl, 'cover', None)
+    }    
 
   def load(self, filename=DATABASES_YAML):
     data = super().load(filename)
@@ -55,9 +56,7 @@ class Database(_base):
     self.data = od
 
   def dump(self):
-    d = {}
-    d.update(self.data)
-    super().dump(d)
+    super().dump(dict(self.data))
 
   def list(self):
     color = MAGENTA()
@@ -81,10 +80,8 @@ class Database(_base):
   def show_by_id(self, id_):
       d = self.find_item_by_id(id_)
       if d:
-        fmt = ' {0:11} | {1}'
-        order_keys = sorted(d.keys())
-        for k in order_keys:
-          print(fmt.format(k, d[k]))   
+        for k in sorted(d.keys()):
+          print(' {0:11} | {1}'.format(k, d[k]))   
       else:
         print ('book not find(id={})'.format(id_))
 
@@ -118,16 +115,13 @@ class Database(_base):
   def update(self):
     od = OrderedDict()
     for idx, (k, v) in enumerate(self.data.items()):
-      id = str(idx)
-      v[K_ID] = id
+      v[K_ID] = id = str(idx)
       od[id] = v
     self.data = od
     
   def remove_by_id(self, id):
-    d = self.data.get(id)
-    del self.data[id]
-    return d
-
+    return self.data.pop(id, None)
+    
   def remove(self, d):
     k = self.find_key_by_url(d[K_URL])
     if k:
