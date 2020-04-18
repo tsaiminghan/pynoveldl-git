@@ -10,6 +10,7 @@ from subprocess import Popen, PIPE, STDOUT
 from shutil import copyfile, move
 import tempfile
 import glob
+from opencc import OpenCC
 
 def _run_cmd(cmd, stdout=PIPE, stderr=STDOUT, **kwargs):
   #print ('cmd: {}'.format(cmd))
@@ -19,7 +20,7 @@ def _run_cmd(cmd, stdout=PIPE, stderr=STDOUT, **kwargs):
     line = p.stdout.readline().strip()
     if line:
       print(line.decode('utf-8'))
-  return p.returncode
+  return p.returncode  
 
 def _pattern(title):
   pattern = '^.*\s*{}\s*\n'
@@ -27,11 +28,15 @@ def _pattern(title):
   for c in chars:
     title = title.replace(c, '\\' + c)
   return pattern.format(title)
-  
+
 @timelog
 def raw2text(novel_dict):
   h = html2text.HTML2Text()
   h.ignore_links = True
+  convert = lambda x: x
+  if GLOBAL.Simple2Traditional:
+    convert = OpenCC('s2twp').convert
+  
   book_dir = novel_dict[K_DIR]
   name = os.path.basename(book_dir) + '.txt'
   textfile = os.path.join(book_dir, name)
@@ -44,11 +49,11 @@ def raw2text(novel_dict):
     for idx, html in enumerate(all_htmls, start=1):
       print('{}/{}'.format(idx, total), end='\r')
 
-      title = html[5:-5]
+      title = convert(html[5:-5])
       html = os.path.join(raw_dir, html)
 
       with open(html, 'r', encoding ='utf-8') as fin:
-        lines = h.handle(fin.read())
+        lines = convert(h.handle(fin.read()))
         # remove repeated title string
         lines = re.sub(_pattern(title), '', lines, re.S)
         
@@ -60,6 +65,9 @@ def raw2text(novel_dict):
 def raw2aozora(novel_dict):           
   h = html2text.HTML2Text()
   h.ignore_links = True
+  convert = lambda x: x
+  if GLOBAL.Simple2Traditional:
+    convert = OpenCC('s2twp').convert
 
   book_dir = novel_dict[K_DIR]
   name = os.path.basename(book_dir) + '-aozora.txt'
@@ -80,7 +88,7 @@ def raw2aozora(novel_dict):
       elif html.endswith('.jpg'):
         continue
       
-      title = html[5:-5]
+      title = convert(html[5:-5])
       html = os.path.join(raw_dir, html)
       
       with open(html, 'r', encoding ='utf-8') as fin:
@@ -89,7 +97,9 @@ def raw2aozora(novel_dict):
           fout.write(AOZORA.part(part))
           part = ''
         
-        lines = h.handle(fin.read())
+        lines = convert(h.handle(fin.read()))
+        lines = re.sub(_pattern(title), '', lines, re.S)
+        
         fout.write(AOZORA.title(title))
         for line in lines.splitlines():
           fout.write(AOZORA.paragraph(line.strip()))

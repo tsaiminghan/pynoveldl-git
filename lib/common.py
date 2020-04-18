@@ -1,7 +1,7 @@
 #from hanziconv import HanziConv
 import time
 import os
-
+  
 '''def s2t(string):
   return HanziConv.toTraditional(string)'''
 
