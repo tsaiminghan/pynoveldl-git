@@ -55,10 +55,10 @@ def raw2text(novel_dict):
       with open(html, 'r', encoding ='utf-8') as fin:
         lines = convert(h.handle(fin.read()))
         # remove repeated title string
-        lines = re.sub(_pattern(title), '', lines, re.S)
+        lines = re.sub(_pattern(title), '', lines, re.S).strip()
         
-        fout.write(title + '\n\n')        
-        fout.write(lines)
+        fout.write(title + '\n'*2)
+        fout.write(lines + '\n'*2)
     print ('')
 
 @timelog
@@ -75,7 +75,7 @@ def raw2aozora(novel_dict):
   raw_dir = os.path.join(book_dir, RAW)  
 
   with open(textfile, 'w', encoding='utf-8') as fout:
-    fout.write(AOZORA.bookinfo(**novel_dict))   
+    fout.write(convert(AOZORA.bookinfo(**novel_dict)))
     all_htmls = os.listdir(raw_dir)
     total = len(all_htmls)
     part = ''
@@ -98,7 +98,7 @@ def raw2aozora(novel_dict):
           part = ''
         
         lines = convert(h.handle(fin.read()))
-        lines = re.sub(_pattern(title), '', lines, re.S)
+        lines = re.sub(_pattern(title), '', lines, re.S).strip()
         
         fout.write(AOZORA.title(title))
         for line in lines.splitlines():

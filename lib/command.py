@@ -138,12 +138,21 @@ def remove(*ids):
   db.dump()
 
 def convert(id_, *argv):
-  '''n convert <id> txt|aozora|epub|mobi
+  '''Usage: n convert <id> txt|aozora|epub|mobi  
+  txt      raw -> txt
+  aozora   raw -> aozora txt
+  epub     aozora txt -> epub
+  mobi     epub -> mobi
+  e.g.
+    n c 0 t e
 ''' 
   d = Database.getItemById(id_)
   if not d:
     print ('not find book id:', id_)
     return
+
+  if not argv:
+    argv ='taem'
   
   for ext in argv:
     if 'txt'.startswith(ext):
