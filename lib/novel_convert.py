@@ -1,6 +1,7 @@
 import html2text
 import os
 import sys
+import re
 from .common import timelog
 from .constant import *
 from .settings import AOZORA, GLOBAL
@@ -11,7 +12,7 @@ import tempfile
 import glob
 
 def _run_cmd(cmd, stdout=PIPE, stderr=STDOUT, **kwargs):
-  print ('cmd: {}'.format(cmd))
+  #print ('cmd: {}'.format(cmd))
   p = Popen(cmd, stdout=stdout, stderr=stderr, **kwargs)
 
   while p.poll() is None:
@@ -20,6 +21,13 @@ def _run_cmd(cmd, stdout=PIPE, stderr=STDOUT, **kwargs):
       print(line.decode('utf-8'))
   return p.returncode
 
+def _pattern(title):
+  pattern = '^.*\s*{}\s*\n'
+  chars ='()[]'
+  for c in chars:
+    title = title.replace(c, '\\' + c)
+  return pattern.format(title)
+  
 @timelog
 def raw2text(novel_dict):
   h = html2text.HTML2Text()
@@ -30,14 +38,21 @@ def raw2text(novel_dict):
   raw_dir = os.path.join(book_dir, RAW)
 
   with open(textfile, 'w', encoding='utf-8') as fout:
-    all_htmls = [os.path.join(raw_dir, h)
-                 for h in glob.glob1(raw_dir, '*.html')]
+    all_htmls = glob.glob1(raw_dir, '*.html')
     
     total = len(all_htmls)
     for idx, html in enumerate(all_htmls, start=1):
       print('{}/{}'.format(idx, total), end='\r')
+
+      title = html[5:-5]
+      html = os.path.join(raw_dir, html)
+
       with open(html, 'r', encoding ='utf-8') as fin:
         lines = h.handle(fin.read())
+        # remove repeated title string
+        lines = re.sub(_pattern(title), '', lines, re.S)
+        
+        fout.write(title + '\n\n')        
         fout.write(lines)
     print ('')
 
