@@ -33,5 +33,5 @@ Python 3.8.2<br>
 
 2. get the free chapters from qidian, run below command on cmds<br>
   n.bat download https://book.qidian.com/info/1010868264<br>
-  or
+  or<br>
   n.bat d https://book.qidian.com/info/1010868264<br>
