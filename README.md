@@ -19,8 +19,18 @@ enviroment setup step:<br>
   put them together, and set the path to AozoraEpub3_path in globals.yaml.
 
 4. set path for the AozoraEpub3, edit config/globals.yaml or excute below command to setup. <br>
-- n.bat init
-
+  n.bat init<br>
+  
 my enviroment is:<br>
-  Window8<br>
-  Python 3.8.2<br>
+Window8<br>
+Python 3.8.2<br>
+
+<h3>command usage</h3>
+
+1. get command infomation.<br>
+  n.bat help<br>
+
+2. get the free chapters from qidian, run below command on cmds<br>
+  n.bat download https://book.qidian.com/info/1010868264<br>
+  or use n instead of full strings<br>
+  n.bat d https://book.qidian.com/info/1010868264<br>
