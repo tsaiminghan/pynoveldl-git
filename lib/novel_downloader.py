@@ -129,8 +129,7 @@ class NovelDownloader(object):
     multiprocessing.freeze_support()  # for windows, RuntimeError
     pool = multiprocessing.Pool(self.pool_num)
 
-    raw_dir = self.get_book_dir([RAW])
-    _makedirs(raw_dir)
+    _makedirs(self.get_book_dir([RAW]))
 
     result = []
     for idx, (title, link, *part) in enumerate(self.all_chaps, start=1):

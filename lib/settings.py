@@ -96,6 +96,9 @@ class _aozora(_global):
         self.H2_END,
         self.linesep)
 
+  def chapter_end(self):
+    return self.CHANGE_PAGE + self.linesep
+
   def part(self, text):
     return '{0}{6}{1}{2}{3}{4}{6}{5}{6}'.format(
         self.HCENTRAL,

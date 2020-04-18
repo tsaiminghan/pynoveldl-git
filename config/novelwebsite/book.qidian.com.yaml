@@ -4,7 +4,6 @@ Downloader:
   encoding: utf-8
 NovelDownloader:
   ctl_dl_cover: false
-  ctl_append_title_when_dl_chapter: true
   ctl_dl_delay: 1
   pool_num: 1
 Website:

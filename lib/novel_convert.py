@@ -11,7 +11,7 @@ import tempfile
 import glob
 
 def _run_cmd(cmd, stdout=PIPE, stderr=STDOUT, **kwargs):
-  #print ('cmd: {}'.format(cmd))
+  print ('cmd: {}'.format(cmd))
   p = Popen(cmd, stdout=stdout, stderr=stderr, **kwargs)
 
   while p.poll() is None:
@@ -78,6 +78,7 @@ def raw2aozora(novel_dict):
         fout.write(AOZORA.title(title))
         for line in lines.splitlines():
           fout.write(AOZORA.paragraph(line.strip()))
+        fout.write(AOZORA.chapter_end())
     print ('')
 
 class _tmp(object):
@@ -121,12 +122,11 @@ def aozora2epub(novel_dict):
   name = os.path.basename(book_dir) + '-aozora.txt'
   aozoratext = os.path.join(book_dir, name)
   tmp = _tmp(aozoratext, suffix='.txt')  
-  
+  ini = os.path.abspath(os.path.join(CONF, 'AozoraEpub3.ini'))
   oridir = os.getcwd()
   
   jar_path = GLOBAL.AozoraEpub3_path
-  cmd = 'java -Dfile.encoding=UTF-8 -cp AozoraEpub3.jar AozoraEpub3 -of'
-  cmd += ' -enc {}'.format(GLOBAL.AozoraEpub3_enc)
+  cmd = 'java -Dfile.encoding=UTF-8 -cp AozoraEpub3.jar AozoraEpub3 -enc UTF-8 -of -i ' + ini
   if GLOBAL.AozoraEpub3_device:
     cmd += ' -device {}'.format(GLOBAL.AozoraEpub3_device)
   if GLOBAL.AozoraEpub3_hor:
