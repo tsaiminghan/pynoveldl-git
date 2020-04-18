@@ -10,6 +10,7 @@ enviroment setup step:<br>
  pip install BeautifulSoup<br>
  pip install requests<br>
  pip install html2text<br>
+ pip install opencc-python-reimplemented<br>
 
 3. transter to epub and mobi, need below enviroment.<br>
   AozoraEpub3  (need Java)<br>
