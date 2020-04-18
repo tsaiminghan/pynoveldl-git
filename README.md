@@ -3,7 +3,12 @@
 I'm studing to use web crawler to get the novels from websites.<br>
 
 enviroment setup step:<br>
-1. install python3, and then setup python and pip enviroemnt path.<br>
+1. install python3, and then setup python and pip to windows enviroemnt path.<br>
+  https://www.python.org/download/releases/3.0/</br>
+  During installing process, Please tick the checkbox【Add python 3.8.x to PATH】
+  and python would be add to windows enviroment path.
+  https://docs.python.org/3/using/windows.html
+  
 2. install below python module.<br>
  pip install PyYAML<br>
  pip install lxml<br>
@@ -15,11 +20,14 @@ enviroment setup step:<br>
 3. transter to epub and mobi, need below enviroment.<br>
   AozoraEpub3  (need Java)<br>
   <a href="https://w.atwiki.jp/hmdev/pages/21.html">https://w.atwiki.jp/hmdev/pages/21.html</a><br>
+  OpenJDK (java), I try the newest jdk-14.0.1 on below site, and it works fine.<br>
+  need add it to windows enviroment, too.<br>
+  <a href="https://jdk.java.net/archive/">https://jdk.java.net/archive/</a><br>
   KindleGen  <br>
   <a href="https://www.amazon.com/gp/feature.html?docId=1000765211">https://www.amazon.com/gp/feature.html?docId=1000765211</a><br>
-  put them together, and set the path to AozoraEpub3_path in globals.yaml.
+  put kindleGen and AozraEpub3 together
 
-4. set path for the AozoraEpub3, edit config/globals.yaml or excute below command to setup. <br>
+4. set AozoraEpub3 and KindleGen path, edit config/globals.yaml or excute below command to setup. <br>
   n.bat init<br>
   
 my enviroment is:<br>
