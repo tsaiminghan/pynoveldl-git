@@ -1,13 +1,16 @@
 # pynoveldl-git
 
 I'm studing to use web crawler to get the novels from websites.<br>
+my enviroment is:<br>
+  Window8<br>
+  Python 3.8.2<br>
 
 enviroment setup step:<br>
 1. install python3, and then setup python and pip to windows enviroemnt path.<br>
   https://www.python.org/download/releases/3.0/</br>
-  During installing process, Please tick the checkbox【Add python 3.8.x to PATH】
-  and python would be add to windows enviroment path.
-  https://docs.python.org/3/using/windows.html
+  During installing process, Please tick the checkbox【Add python 3.8.x to PATH】<br>
+  and python would be add to windows enviroment path.<br>
+  https://docs.python.org/3/using/windows.html<br>
   
 2. install below python module.<br>
  pip install PyYAML<br>
@@ -18,22 +21,18 @@ enviroment setup step:<br>
  pip install opencc-python-reimplemented<br>
 
 3. transter to epub and mobi, need below enviroment.<br>
-  AozoraEpub3  (need Java)<br>
-  <a href="https://w.atwiki.jp/hmdev/pages/21.html">https://w.atwiki.jp/hmdev/pages/21.html</a><br>
-  OpenJDK (java), I try the newest jdk-14.0.1 on below site, and it works fine.<br>
-  need add it to windows enviroment, too.<br>
-  <a href="https://jdk.java.net/archive/">https://jdk.java.net/archive/</a><br>
+  AozoraEpub3 (need Java)<br>
+  https://w.atwiki.jp/hmdev/pages/21.html<br>
+  OpenJDK (java), I try the newest jdk-14.0.1 on below site, and it works fine for AozoraEpub3.<br>
+  need add it to windows enviroment path, too.<br>
+  https://jdk.java.net/archive/<br>
   KindleGen  <br>
-  <a href="https://www.amazon.com/gp/feature.html?docId=1000765211">https://www.amazon.com/gp/feature.html?docId=1000765211</a><br>
+  https://www.amazon.com/gp/feature.html?docId=1000765211<br>
   put kindleGen and AozraEpub3 together
 
 4. set AozoraEpub3 and KindleGen path, edit config/globals.yaml or excute below command to setup. <br>
   n.bat init<br>
   
-my enviroment is:<br>
-Window8<br>
-Python 3.8.2<br>
-
 <h3>command usage</h3>
 
 1. get command infomation.<br>
