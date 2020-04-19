@@ -6,6 +6,7 @@ from .novel_convert import *
 from .download import download, update
 from .constant import *
 from .browser import *
+import glob
 
 class Command(object):
   _options = [ 'convert', 'download', 'update', 'remove',
@@ -16,7 +17,7 @@ class Command(object):
     cmds = [ opt for opt in Command._options if opt.startswith(cmd)]
     if len(cmds) == 1:      
       return cmds[0]
-    print ('WARN: "{}" need to matche 1 command: {}'.format(cmd, cmds))
+    print ('WARN: "{}" matche {} command(s): {}'.format(cmd, len(cmds), cmds))
     return default
   
   def __init__(self, *argv, **kwargs):
@@ -88,10 +89,8 @@ def support():
   '''Usage: n support
   list support website
 '''
-  import glob
-  _dir = os.path.join('config', 'novelwebsite')
   print ('support website list:')
-  for site in glob.glob1(_dir, '*.yaml'):
+  for site in glob.glob1(CONF_NOVELWEBSITE, '*.yaml'):
     print ('  {}'.format(site[0:-5]))
 
 def list_(id_=None):
@@ -194,7 +193,7 @@ def settings(*argv, **kwargs):
   # 1. GLOBAL
   # 2. config\database.yaml
   from .settings import _settings, novelsettings
-  import glob
+  
   mod, func = argv[0:2]
 
   if 'global'.startswith(mod):
@@ -227,7 +226,7 @@ def help_(cmd='h'):
     print('''Usage: n <command> [arguments...]
 
 command:
-  browser    open the book url.
+  browser   open the book url.
   folder    open the book folders
   download  download books.
   update    currently this is same with download
@@ -237,7 +236,7 @@ command:
   init      setup enviroment.
   help      use 'n help <command>' to get command details.
   
-  each command could use head words of command string to instead of full command
+  each command could use head words of a command to instead of full one.
   e.g. n download <url> -> n d <url>
        n list           -> n l
        n support        -> n su
