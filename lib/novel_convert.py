@@ -107,9 +107,6 @@ def raw2aozora(novel_dict):
     print ('')
 
 class _tmp(object):
-  ''' Popen could not working on unicode path,
-copy them to non-unicode path.
-  '''
   def __init__(self, name, suffix):
     _, tmp = tempfile.mkstemp(suffix=suffix)
     os.close(_)
@@ -131,25 +128,23 @@ def epub2mobi(novel_dict):
   book_dir = novel_dict[K_DIR]
   name = os.path.basename(book_dir) + '.epub'
   epub = os.path.join(book_dir, name)
-  tmp = _tmp(epub, suffix='.epub')
   
   kindlegen = os.path.join(GLOBAL.kindlegen_path, 'kindlegen.exe')
-  cmd = '{} {} -{}'.format(kindlegen, tmp, GLOBAL.kindlegen_compresslevel)
+  cmd = [kindlegen, epub, '-' + GLOBAL.kindlegen_compresslevel]
 
-  _run_cmd(cmd)
-
-  move(tmp[0:-5] + '.mobi', epub[0:-5] + '.mobi')
+  _run_cmd(cmd, shell=False)
 
 @timelog
 def aozora2epub(novel_dict):
-  
+  '''AozoraEpub3 can only use the argument with japenese code page
+     so we use _tmp
+  '''
   book_dir = novel_dict[K_DIR]
   name = os.path.basename(book_dir) + '-aozora.txt'
   aozoratext = os.path.join(book_dir, name)
   tmp = _tmp(aozoratext, suffix='.txt')  
   ini = os.path.abspath(os.path.join(CONF, 'AozoraEpub3.ini'))
-  oridir = os.getcwd()
-  
+    
   jar_path = GLOBAL.AozoraEpub3_path
   cmd = 'java -Dfile.encoding=UTF-8 -cp AozoraEpub3.jar AozoraEpub3 -enc UTF-8 -of -i ' + ini
   if GLOBAL.AozoraEpub3_device:
@@ -161,10 +156,7 @@ def aozora2epub(novel_dict):
     #cover = os.path.abspath(novel_dict.get(K_COVER))
     cmd += ' -c {}'.format(cover)
   cmd += ' "{}"'.format(tmp)
-
-  #_run_cmd(cmd, cwd=jar_path)
-  os.chdir(jar_path)  
-  _run_cmd(cmd)
-  os.chdir(oridir)
   
+  _run_cmd(cmd, cwd=jar_path, shell=True)
+    
   move(tmp[0:-4] + '.epub', aozoratext[0:-11] + '.epub')
