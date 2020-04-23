@@ -128,9 +128,8 @@ class NovelDownloader(object):
     
     filename = '{0:04} {1}'.format(idx, _chk_win_folder(title))
     html = self.get_book_dir([RAW, filename + '.html'])
-    yaml = self.get_book_dir([CONT, filename + '.yaml'])
      
-    if os.path.exists(yaml):
+    if os.path.exists(html):
       return (True, idx, chap_dict)
     
     time.sleep(self.ctl_dl_delay)
@@ -154,6 +153,9 @@ class NovelDownloader(object):
     filename = '{0:04} {1}'.format(idx, _chk_win_folder(title))
     html = self.get_book_dir([RAW, filename + '.html'])
     yaml = self.get_book_dir([CONT, filename + '.yaml'])
+
+    if os.path.exists(yaml):
+      return
 
     with open(html, 'r', encoding='utf-8') as f:
       content = f.read()
@@ -193,7 +195,7 @@ class NovelDownloader(object):
       ret, idx, chap_dict = r.get()
       success += ret
       self.dl_ret.append(ret)
-      self.gen_content(idx, chap_dict)        
+      self.gen_content(idx, chap_dict)
       print('{}/{}'.format(idx, total), end='\r')
       
     print('{}/{} ok'.format(idx, total))  
