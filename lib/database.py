@@ -1,4 +1,4 @@
-from .settings import _base
+from .yamlbase import yamlbase
 from .color_console import MAGENTA
 import os
 from collections import OrderedDict
@@ -8,7 +8,7 @@ from .constant import *
 _tfmt = '%Y-%m-%d %H:%M'
 
 
-class Database(_base):
+class Database(yamlbase):
 
   def getDB():
     if not hasattr(Database, 'db'):
@@ -37,8 +37,8 @@ class Database(_base):
   '''
   def item(self, mydl):
     return {
-      K_AUTHOR: mydl.author,
-      K_BOOKNAME: mydl.bookname,
+      K_AUTHOR: mydl.get_author(),
+      K_BOOKNAME: mydl.get_bookname(),
       K_URL: mydl.booklink,
       K_CHAPS: len(mydl.all_chaps),
       K_DIR: mydl.get_book_dir(),

@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 from lib.common import timelog
 from lib.constant import *
 
-
 class mydl(NovelDownloader):
   chap_url = 'https://read.qidian.com/chapter/'
   cate_url = 'https://book.qidian.com/ajax/book/category'
@@ -21,23 +20,24 @@ class mydl(NovelDownloader):
     data = d['data']
     vs = data['vs'] #list
     for d in vs:
-      # each partss
-      part = d['vN']
+      chapter = d['vN']
       vip = d['vS']
       if vip:
         # skip vip chapter
         break
       
       for d2 in d['cs']:
-        # each chapters
-        uptime = d2['uT']
-        link = self.chapter_link(d2['cU'])
-        title = d2['cN']
-        self.all_chaps.append((title, link, part))
-        part = ''
+        item = {}
+        item[K_DATE] = d2['uT']
+        item[K_URL] = self.chapter_link(d2['cU'])
+        item[K_TITLE] = d2['cN']
+        if chapter:
+          item[K_CHAPTER] = chapter
+          chapter = None
+        self.all_chaps.append(item)
 
     # the time of the last free chapter 
-    self.update_time = uptime
+    self.update_time = item[K_DATE]
     return self.all_chaps 
 
   @timelog

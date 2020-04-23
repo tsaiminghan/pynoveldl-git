@@ -1,11 +1,11 @@
 from lib.novel_downloader import NovelDownloader
 from collections import OrderedDict
 import os
-
+from lib.constant import *
 
 class mydl(NovelDownloader):
     
-  def __init__(self, booklink=None):
+  def __init__(self, booklink=None):    
     self.set_booklink(booklink)
     self.load_settings()
 
@@ -26,8 +26,8 @@ class mydl(NovelDownloader):
       odict[link] = title
 
     result = []
-    for link, title in odict.items():
-      result.append((title, link))
+    for url, title in odict.items():
+      result.append({K_TITLE: title, K_URL: url})
 
     return result
 

@@ -1,15 +1,32 @@
 from .downloader import Downloader
 from .common import timelog
+from .yamlbase import yamlbase
 from .settings import novelsettings
 from bs4 import BeautifulSoup
 import os
 import time
+import re
 import multiprocessing
+from opencc import OpenCC
 from .constant import *
+from .settings import GLOBAL
+import html2text
+
+def _pattern(title):
+  pattern = '^.*\s*{}\s*\n'
+  chars ='()[]'
+  for c in chars:
+    title = title.replace(c, '\\' + c)
+  return pattern.format(title)
 
 def _makedirs(path):
   if not os.path.exists(path):
     os.makedirs(path)  
+
+def _chk_win_folder(name):
+  ''' not allow symbol \/:*?"<>|
+  '''
+  return re.sub('[\\\\/:*?"<>|]+', '', name)
 
 class NovelDownloader(object):
   ctl_dl_delay = 0
@@ -32,7 +49,7 @@ class NovelDownloader(object):
     self.dl_path = os.path.join(DATA, s.Website[K_URL])
   
   def __init__(self, **kwargs):
-    self.downloader = Downloader(**kwargs)
+    self.downloader = Downloader(**kwargs) 
 
   def chapter_list_filter(self, soup):
     ''' need implement
@@ -78,9 +95,13 @@ class NovelDownloader(object):
     return self.booklink
 
   def get_author(self):
+    if GLOBAL.Simple2Traditional:
+      return OpenCC('s2twp').convert(self.author)
     return self.author
 
   def get_bookname(self):
+    if GLOBAL.Simple2Traditional:
+      return OpenCC('s2twp').convert(self.bookname)
     return self.bookname
   
   def get_update_time(self):
@@ -100,29 +121,50 @@ class NovelDownloader(object):
     print (' {0:11} | {1}'.format(K_UPTIME, self.update_time))
     print (' {0:11} | {1}'.format(K_CHAPS, len(self.all_chaps)))    
 
-  def dl_chapter(self, idx, title, link):
+  def dl_raw_chapter(self, idx, chap_dict):
     #print ('{} {} {}'.format(idx, title, link))
+    title = chap_dict[K_TITLE]
+    link = chap_dict[K_URL]
     
-    filename = os.path.join(self.get_book_dir(),
-                            RAW, '{0:04} {1}.html'.format(idx, title))
-    if os.path.exists(filename):
-      return True
+    filename = '{0:04} {1}'.format(idx, _chk_win_folder(title))
+    html = self.get_book_dir([RAW, filename + '.html'])
+    yaml = self.get_book_dir([CONT, filename + '.yaml'])
+     
+    if os.path.exists(yaml):
+      return (True, idx, chap_dict)
     
     time.sleep(self.ctl_dl_delay)
     
     r = self.downloader.get(link)
     if not r:
       #print ('dl fail: {} {} {}'.format(idx, title, link))
-      return False
+      return (False, idx, chap_dict)
     
     soup = BeautifulSoup(r.text,'lxml')
     content = self.chapter_content_filter(soup)
     
-    with open(filename, 'w', encoding='utf-8') as f:
+    with open(html, 'w', encoding='utf-8') as f:
       f.write(content)
-      return True
-    
-    return False
+      return (True, idx, chap_dict)
+        
+    return (False, idx, chap_dict)
+
+  def gen_content(self, idx, chap_dict):
+    title = chap_dict[K_TITLE]
+    filename = '{0:04} {1}'.format(idx, _chk_win_folder(title))
+    html = self.get_book_dir([RAW, filename + '.html'])
+    yaml = self.get_book_dir([CONT, filename + '.yaml'])
+
+    with open(html, 'r', encoding='utf-8') as f:
+      content = f.read()
+      c = self.h.handle(content)
+      c = re.sub(_pattern(title), '', c, re.S).strip()
+      if GLOBAL.Simple2Traditional:
+        c = self.convert(c)
+        chap_dict[K_TITLE] = self.convert(title)
+      d = dict(chap_dict)
+      d[K_BODY] = c
+      yamlbase(yaml).dump(data=d)
 
   @timelog
   def dl_all_chapters(self):
@@ -130,27 +172,28 @@ class NovelDownloader(object):
     pool = multiprocessing.Pool(self.pool_num)
 
     _makedirs(self.get_book_dir([RAW]))
+    _makedirs(self.get_book_dir([CONT]))
 
     result = []
-    for idx, (title, link, *part) in enumerate(self.all_chaps, start=1):
+    for idx, chap_dict in enumerate(self.all_chaps, start=1):
       #print ('{} {} {}'.format(idx, title, link))
-      res = pool.apply_async(self.dl_chapter, args=(idx, title, link))
+      res = pool.apply_async(self.dl_raw_chapter, args=(idx, chap_dict))
       result.append(res)
-      if part and part[0]:
-        filename = self.get_book_dir([RAW, '{0:04} ---- {1}.part'.format(idx, part[0])])
-        with open(filename, 'w') as f:
-          pass
     pool.close()
     #pool.join()
 
+    self.h = html2text.HTML2Text()
+    self.h.ignore_links = True
+    if GLOBAL.Simple2Traditional:
+      self.convert = OpenCC('s2twp').convert
     success = 0
     total = len(self.all_chaps)
     self.dl_ret = []
     for idx, r in enumerate(result, start=1):
-      ret = r.get()
+      ret, idx, chap_dict = r.get()
       success += ret
       self.dl_ret.append(ret)
-        
+      self.gen_content(idx, chap_dict)        
       print('{}/{}'.format(idx, total), end='\r')
       
     print('{}/{} ok'.format(idx, total))  

@@ -1,16 +1,16 @@
-import html2text
 import os
 import sys
 import re
 from .common import timelog
 from .constant import *
-from .settings import AOZORA, GLOBAL
+from .settings import GLOBAL
 from types import SimpleNamespace
 from subprocess import Popen, PIPE, STDOUT
 from shutil import copyfile, move
 import tempfile
 import glob
-from opencc import OpenCC
+from .yamlbase import yamlbase
+from .aozora import aozora
 
 def _run_cmd(cmd, stdout=PIPE, stderr=STDOUT, **kwargs):
   #print ('cmd: {}'.format(cmd))
@@ -31,80 +31,55 @@ def _pattern(title):
 
 @timelog
 def raw2text(novel_dict):
-  h = html2text.HTML2Text()
-  h.ignore_links = True
-  convert = lambda x: x
-  if GLOBAL.Simple2Traditional:
-    convert = OpenCC('s2twp').convert
   
   book_dir = novel_dict[K_DIR]
   name = os.path.basename(book_dir) + '.txt'
   textfile = os.path.join(book_dir, name)
-  raw_dir = os.path.join(book_dir, RAW)
+  cont_dir = os.path.join(book_dir, CONT)
 
   with open(textfile, 'w', encoding='utf-8') as fout:
-    all_htmls = glob.glob1(raw_dir, '*.html')
+    all_yamls = glob.glob1(cont_dir, '*.yaml')
     
-    total = len(all_htmls)
-    for idx, html in enumerate(all_htmls, start=1):
+    total = len(all_yamls)
+    for idx, yaml in enumerate(all_yamls, start=1):
       print('{}/{}'.format(idx, total), end='\r')
 
-      title = convert(html[5:-5])
-      html = os.path.join(raw_dir, html)
+      yaml = os.path.join(cont_dir, yaml)
 
-      with open(html, 'r', encoding ='utf-8') as fin:
-        lines = convert(h.handle(fin.read()))
-        # remove repeated title string
-        lines = re.sub(_pattern(title), '', lines, re.S).strip()
-        
-        fout.write(title + '\n'*2)
-        fout.write(lines + '\n'*2)
+      d = yamlbase(yaml).load()
+      fout.write(d[K_TITLE] + '\n'*2)
+      fout.write(d[K_BODY] + '\n'*2)
+
     print ('')
 
 @timelog
 def raw2aozora(novel_dict):           
-  h = html2text.HTML2Text()
-  h.ignore_links = True
-  convert = lambda x: x
-  if GLOBAL.Simple2Traditional:
-    convert = OpenCC('s2twp').convert
-
+  
   book_dir = novel_dict[K_DIR]
   name = os.path.basename(book_dir) + '-aozora.txt'
   textfile = os.path.join(book_dir, name)
-  raw_dir = os.path.join(book_dir, RAW)  
+  cont_dir = os.path.join(book_dir, CONT)  
 
-  with open(textfile, 'w', encoding='utf-8') as fout:
-    fout.write(convert(AOZORA.bookinfo(**novel_dict)))
-    all_htmls = os.listdir(raw_dir)
-    total = len(all_htmls)
-    part = ''
-    for idx, html in enumerate(all_htmls, start=1):
-      print('{}/{}'.format(idx, total), end='\r')
+  aoz = aozora(textfile)
+  aoz.bookinfo(**novel_dict)
+  
+  all_yamls = os.listdir(cont_dir)
+  total = len(all_yamls)  
+  for idx, yaml in enumerate(all_yamls, start=1):
+    print('{}/{}'.format(idx, total), end='\r')
 
-      if html.endswith('.part'):
-        part = html[10:-5]
-        continue
-      elif html.endswith('.jpg'):
-        continue
-      
-      title = convert(html[5:-5])
-      html = os.path.join(raw_dir, html)
-      
-      with open(html, 'r', encoding ='utf-8') as fin:
+    yaml = os.path.join(cont_dir, yaml)
+    d = yamlbase(yaml).load()
 
-        if part:
-          fout.write(AOZORA.part(part))
-          part = ''
-        
-        lines = convert(h.handle(fin.read()))
-        lines = re.sub(_pattern(title), '', lines, re.S).strip()
-        
-        fout.write(AOZORA.title(title))
-        for line in lines.splitlines():
-          fout.write(AOZORA.paragraph(line.strip()))
-        fout.write(AOZORA.chapter_end())
-    print ('')
+    if d.get(K_CHAPTER):
+      aoz.chapter(d[K_CHAPTER])
+    aoz.title(d[K_TITLE])
+    lines = d[K_BODY]
+    for line in lines.splitlines():
+      aoz.paragraph(line.strip())
+    aoz.chapter_end()
+
+  print ('')
 
 class _tmp(object):
   def __init__(self, name, suffix):
