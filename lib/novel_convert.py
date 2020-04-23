@@ -22,13 +22,6 @@ def _run_cmd(cmd, stdout=PIPE, stderr=STDOUT, **kwargs):
       print(line.decode('utf-8'))
   return p.returncode  
 
-def _pattern(title):
-  pattern = '^.*\s*{}\s*\n'
-  chars ='()[]'
-  for c in chars:
-    title = title.replace(c, '\\' + c)
-  return pattern.format(title)
-
 @timelog
 def raw2text(novel_dict):
   
