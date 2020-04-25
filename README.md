@@ -42,3 +42,7 @@ enviroment setup step:<br>
   n.bat download https://book.qidian.com/info/1010868264<br>
   or<br>
   n.bat d https://book.qidian.com/info/1010868264<br>
+  
+<h3>References:</h3>
+  https://github.com/whiteleaf7/narou<br>
+  https://github.com/eight04/ComicCrawler<br>
