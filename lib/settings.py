@@ -4,7 +4,7 @@ from .constant import *
 
 class _settings(object):
   
-  def __init__(self, ybase):
+  def __init__(self, base):
     self.base = base
 
   def list(self, *argv):
