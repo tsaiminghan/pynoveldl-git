@@ -1,7 +1,7 @@
 from lib.database import wrapper
 from lib.novel_convert import *
 
-def convert(id_, *argv):
+def convert(id_, *argv, **kwarg):
   '''Usage: n convert <id> txt|aozora|epub|mobi  
   txt      raw -> txt
   aozora   raw -> aozora txt

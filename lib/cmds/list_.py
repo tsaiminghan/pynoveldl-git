@@ -1,6 +1,6 @@
 from lib.database import Database
 
-def list_(id_=None):
+def list_(id_=None, *argv, **kwarg):
   '''Usage: n list [<id>]
   show the list id of all novels.
     DATE: the last time to check (update_time)

@@ -4,7 +4,7 @@ from lib.constant import K_DIR
 from lib.common import exitfalse
 import os
 
-def send(*argv):
+def send(*argv, **kwarg):
   '''Usage n send <id1> [<id2>]...
   copy the mobi to Kindle device.
   e.g.

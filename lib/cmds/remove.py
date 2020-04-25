@@ -2,7 +2,7 @@ from lib.database import Database
 from lib.constant import K_DIR
 from shutil import rmtree
 
-def remove(*ids):
+def remove(*ids, **kwarg):
   '''Usage: n remove <id1> [<id2>...]
   use the list command to get id of novel.
   and then remove it by id.

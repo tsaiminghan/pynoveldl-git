@@ -14,14 +14,14 @@ def _open_folder(path):
   abspath = os.path.abspath(path)
   webbrowser.open('file:///' + abspath)
 
-def browser(id_):
+def browser(id_, *argv, **kwarg):
   '''n browser <id>
   open the book url.
 '''
   with wrapper(id_) as d:
     _open_url(d[K_URL])
 
-def folder(id_):
+def folder(id_, *argv, **kwarg):
   '''n browser <id>
   open the book folder.
 '''
