@@ -1,7 +1,4 @@
-from .sample1 import mydl as base
-
-class mydl(base):
-  pass  
+from .sample1 import mydl
 
 if __name__ == '__main__':
   a = mydl('https://www.ranwen.la/files/article/89/89698/')
