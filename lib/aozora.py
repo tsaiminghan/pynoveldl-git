@@ -50,7 +50,7 @@ class aozora(_global):
   def bookinfo(self, **kwargs):
     intro = '{0}{3}website:{3}<a href="{1}">{1}</a>{3}{0}{3}{2}{3}'.format(
         self.SEPARATOR_LINE,
-        kwargs['url'],
+        kwargs[K_URL],
         self.CHANGE_PAGE,
         self.linesep)
       

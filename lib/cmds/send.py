@@ -1,22 +1,23 @@
 from lib.device import Kindle
-from lib.database import Database
+from lib.database import wrapper
 from lib.constant import K_DIR
+from lib.common import exitfalse
 import os
 
-def send(id_):
-  '''Usage n send <id>
+def send(*argv):
+  '''Usage n send <id1> [<id2>]...
   copy the mobi to Kindle device.
   e.g.
     n send 0
-    n sen 0
+    n sen 0 1 2
 '''
-  d = Database.getItemById(id_)
-  if d:
-    path = d[K_DIR]
-    name = os.path.basename(path)
-    mobi = os.path.join(path, name + '.mobi')
-    r = Kindle().push(mobi)
-    if r:
-      print (r)
-  else:
-    print ('not find book id', id_)
+  k = Kindle()
+  exitfalse(k.exist(), 'not find Kindle device')
+  for id_ in argv:    
+    with wrapper(id_) as d:
+      path = d[K_DIR]
+      name = os.path.basename(path)
+      mobi = os.path.join(path, name + '.mobi')
+      k.push(mobi)
+      if r:
+        print (r)

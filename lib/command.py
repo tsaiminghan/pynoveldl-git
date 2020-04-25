@@ -3,6 +3,7 @@ from .database import Database
 from .constant import *
 import glob
 from .cmds import *
+from .common import exitrue
 
 class Command(object):
   _options = [ 'browser',
@@ -20,10 +21,10 @@ class Command(object):
   cmd = 'help_'
   def match(cmd, default=None):
     cmds = [ opt for opt in Command._options if opt.startswith(cmd)]
-    if len(cmds) == 1:      
-      return cmds[0]
-    print ('WARN: "{}" matche {} command(s): {}'.format(cmd, len(cmds), cmds))
-    return default
+    exitrue(len(cmds) != 1,
+            'WARN: "{}" matche {} command(s): {}'.format(cmd, len(cmds), cmds))
+    return cmds[0]
+
   
   def __init__(self, *argv, **kwargs):
     self.argv = argv

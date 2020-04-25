@@ -67,11 +67,12 @@ class Kindle(WinDevice):
     super().__init__()
     self.drive = self.search('Kindle', DRIVE_REMOVABLE)
 
+  def exist(self):
+    return self.drive != None
+
   def push(self, src):
     if self.drive:
       filename = os.path.basename(src)
       target = os.path.join(self.drive, 'documents', filename)
       return copyfile(src, target)      
-    else:
-      print ('not find Kindle device')
 

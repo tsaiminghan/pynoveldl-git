@@ -1,7 +1,7 @@
 import subprocess
 import webbrowser
 import sys, os
-from lib.database import Database
+from lib.database import wrapper
 from lib.constant import K_URL, K_DIR
 
 def _open_url(url):
@@ -18,20 +18,13 @@ def browser(id_):
   '''n browser <id>
   open the book url.
 '''
-  d = Database.getItemById(id_)
-  if d:
-    _open_url(d[K_URL])    
-    return
-  print ('not find book id:', id_)  
+  with wrapper(id_) as d:
+    _open_url(d[K_URL])
 
 def folder(id_):
   '''n browser <id>
   open the book folder.
 '''
-  d = Database.getItemById(id_)
-  if d:
-    _open_folder(d[K_DIR])    
-    return
-  print ('not find book id:', id_)
-  
+  with wrapper(id_) as d:
+    _open_folder(d[K_DIR])
   

@@ -95,13 +95,13 @@ class NovelDownloader(object):
     return self.booklink
 
   def get_author(self):
-    if GLOBAL.Simple2Traditional:
-      return OpenCC('s2twp').convert(self.author)
+    if GLOBAL.opencc:
+      return OpenCC(GLOBAL.opencc).convert(self.author)
     return self.author
 
   def get_bookname(self):
-    if GLOBAL.Simple2Traditional:
-      return OpenCC('s2twp').convert(self.bookname)
+    if GLOBAL.opencc:
+      return OpenCC(GLOBAL.opencc).convert(self.bookname)
     return self.bookname
   
   def get_update_time(self):
@@ -186,8 +186,8 @@ class NovelDownloader(object):
 
     self.h = html2text.HTML2Text()
     self.h.ignore_links = True
-    if GLOBAL.Simple2Traditional:
-      self.convert = OpenCC('s2twp').convert
+    if GLOBAL.opencc:
+      self.convert = OpenCC(GLOBAL.opencc).convert
     success = 0
     total = len(self.all_chaps)
     self.dl_ret = []

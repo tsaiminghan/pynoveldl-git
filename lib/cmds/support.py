@@ -1,7 +1,7 @@
 import glob
 from lib.constant import CONF_NOVELWEBSITE
 
-def support():
+def support(*argv, **kwarg):
   '''Usage: n support
   list support website
 '''

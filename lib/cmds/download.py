@@ -1,6 +1,6 @@
 import importlib
 from lib.common import url_check
-from lib.database import Database
+from lib.database import Database, wrapper
 from lib.novel_convert import *
 from lib.constant import *
 from lib.settings import GLOBAL
@@ -9,9 +9,8 @@ def _select(booklink, **kwargs):
 
   if booklink.isdigit():
     # this is book id
-    db = Database.getDB()
-    d = db.find_item_by_id(booklink)    
-    booklink = d[K_URL]
+    with wrapper(booklink) as d:    
+      booklink = d[K_URL]
     
   url = booklink.split('/')[2]
   mod_name = url.replace('.', '_')

@@ -1,9 +1,10 @@
 from .yamlbase import yamlbase
 from .color_console import MAGENTA
-import os
+import os, sys
 from collections import OrderedDict
 from datetime import datetime, timedelta
 from .constant import *
+from .common import exitfalse
 
 _tfmt = '%Y-%m-%d %H:%M'
 
@@ -65,7 +66,7 @@ class Database(yamlbase):
     for v in self.data.values():
 
       last_update = datetime.strptime(v[K_LTUPTIME], _tfmt)
-      flag_new = (now - last_update) <= timedelta(hours=8)
+      flag_new = (now - last_update) <= timedelta(hours=1)
                       
       print ('{0:>4} | {1:^10} | {2:>5} | {3}'.format(
         v[K_ID],
@@ -126,3 +127,19 @@ class Database(yamlbase):
     k = self.find_key_by_url(d[K_URL])
     if k:
       self.remove_by_id(k)
+
+class wrapper(object):
+  
+ def __init__(self, id_):
+   self.id = id_
+  
+ def __enter__(self):   
+   d = Database.getItemById(self.id)
+   exitfalse(d, 'not find book id: {}'.format(self.id))
+   return d
+ 
+ def __exit__(self, exc_type, exc_val, exc_tb):   
+   #print ("type: ", exc_type)
+   #print ("val: ", exc_val)
+   #print ("tb: ", exc_tb)
+   return True
