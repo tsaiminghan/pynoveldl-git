@@ -61,8 +61,7 @@ def download(*argv, **kwargs):
   <id>
     update the id of books.
     e.g.
-      n d 0 1 2
-'''
+      n d 0 1 2'''
   if len(argv) == 0:
     db = Database.getDB()
     for v in db.data.values():
@@ -82,6 +81,5 @@ def update(*argv, **kwargs):
     update all of books
     e.g.
       n update
-      n u
-'''
+      n u'''
   download(*argv, **kwargs)

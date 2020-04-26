@@ -9,8 +9,7 @@ def send(*argv, **kwarg):
   copy the mobi to Kindle device.
   e.g.
     n send 0
-    n sen 0 1 2
-'''
+    n sen 0 1 2'''
   k = Kindle()
   exitfalse(k.exist(), 'not find Kindle device')
   for id_ in argv:    

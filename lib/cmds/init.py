@@ -60,8 +60,8 @@ def init(*argv, **kwarg):
     opencc setup opencc
       e.g.
         n init opencc
-        n i opencc
-'''
+        n i opencc'''
+  
   if 'opencc' in argv:
     _setup_opencc()
   else:

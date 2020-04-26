@@ -1,7 +1,3 @@
-import sys, os
-from .database import Database
-from .constant import *
-import glob
 from .cmds import *
 from .common import exitrue
 
@@ -55,11 +51,7 @@ def test(*argv, **kwargs):
     Command(*argv, debug_chaps_limit=10, **kwargs)()
 
 def help_(cmd='h'):
-  cmd = Command.match(cmd)
-  if cmd != help_.__name__:
-    print (eval(cmd).__doc__)
-  else:
-    print('''Usage: n <command> [arguments...]
+  '''Usage: n <command> [arguments...]
 
 command:
   browser   open the book url.
@@ -76,10 +68,6 @@ command:
   each command could use head words of a command to instead of full one.
   e.g. n download <url> -> n d <url>
        n list           -> n l
-       n support        -> n su
-  ''')
-
-if __name__ == '__main__':
-  
-  Command(*sys.argv[1:])()
-
+       n support        -> n su'''
+  cmd = Command.match(cmd)
+  print (eval(cmd).__doc__)

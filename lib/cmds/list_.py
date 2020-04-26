@@ -16,8 +16,7 @@ def list_(id_=None, *argv, **kwarg):
     dir:          download folder
   
   e.g.
-    n l 0
-  '''
+    n l 0  '''
   db = Database.getDB()
   if id_:
     db.show_by_id(id_)

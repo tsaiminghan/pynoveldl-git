@@ -8,8 +8,7 @@ def convert(id_, *argv, **kwarg):
   epub     aozora txt -> epub
   mobi     epub -> mobi
   e.g.
-    n c 0 t e
-'''
+    n c 0 t e'''
   with wrapper(id_) as d:  
     if not argv:
       argv ='taem'

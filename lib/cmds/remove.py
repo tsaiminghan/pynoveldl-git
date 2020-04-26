@@ -8,8 +8,7 @@ def remove(*ids, **kwarg):
   and then remove it by id.
   e.g.
     n remove 0
-    n r 0 1 2
-  '''
+    n r 0 1 2'''
   db = Database.getDB()
   for i in ids:
     d = db.remove_by_id(i)

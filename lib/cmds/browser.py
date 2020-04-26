@@ -16,15 +16,13 @@ def _open_folder(path):
 
 def browser(id_, *argv, **kwarg):
   '''n browser <id>
-  open the book url.
-'''
+  open the book url.'''
   with wrapper(id_) as d:
     _open_url(d[K_URL])
 
 def folder(id_, *argv, **kwarg):
   '''n browser <id>
-  open the book folder.
-'''
+  open the book folder.'''
   with wrapper(id_) as d:
     _open_folder(d[K_DIR])
   
