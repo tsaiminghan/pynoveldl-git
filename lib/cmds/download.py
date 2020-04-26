@@ -40,8 +40,8 @@ def _download(booklink, **kwargs):
   d = db.item(mydl)
 
   raw2text(d)
-  raw2aozora(d)
   if GLOBAL.AozoraEpub3_path:
+    raw2aozora(d)
     aozora2epub(d)
     if GLOBAL.kindlegen_path:
       epub2mobi(d)

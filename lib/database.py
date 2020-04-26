@@ -5,9 +5,9 @@ from collections import OrderedDict
 from datetime import datetime, timedelta
 from .constant import *
 from .common import exitfalse
+from contextlib import contextmanager
 
 _tfmt = '%Y-%m-%d %H:%M'
-
 
 class Database(yamlbase):
 
@@ -128,18 +128,8 @@ class Database(yamlbase):
     if k:
       self.remove_by_id(k)
 
-class wrapper(object):
-  
- def __init__(self, id_):
-   self.id = id_
-  
- def __enter__(self):   
-   d = Database.getItemById(self.id)
-   exitfalse(d, 'not find book id: {}'.format(self.id))
-   return d
- 
- def __exit__(self, exc_type, exc_val, exc_tb):   
-   #print ("type: ", exc_type)
-   #print ("val: ", exc_val)
-   #print ("tb: ", exc_tb)
-   return True
+@contextmanager
+def wrapper(id_):
+  d = Database.getItemById(id_)
+  exitfalse(d, 'not find book id: {}'.format(id_))
+  yield d

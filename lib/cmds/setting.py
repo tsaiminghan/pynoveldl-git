@@ -5,7 +5,7 @@ import os
 
 def setting(*argv, **kwargs):
   '''Usage: n settings <module> list|put|get|remove [key...] [value]
-  chagne the yaml settings. you alos can edit yaml files by notepad..etc.
+  chagne the yaml settings, or you can edit yaml files by notepad.
 
   <module>
     1. global
@@ -16,7 +16,6 @@ def setting(*argv, **kwargs):
     e.g.
     n settings database list 0 bookname
     n se d list 0 bookname
-    n se g list
 
   get [keys..]
     return the target dict
@@ -26,10 +25,8 @@ def setting(*argv, **kwargs):
 
   put [key..] value
     add or chagne the dict
-
     e.g.
-    n se database put 0 bookname "this is a book"
-'''
+    n se database put 0 bookname "this is a book"'''
   # 1. GLOBAL
   # 2. config\database.yaml  
   

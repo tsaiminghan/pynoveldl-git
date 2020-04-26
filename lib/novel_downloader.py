@@ -29,7 +29,7 @@ def _chk_win_folder(name):
   return re.sub('[\\\\/:*?"<>|]+', '', name)
 
 class NovelDownloader(object):
-  ctl_dl_delay = 0
+  ctl_dl_delay = 0  
   debug_chaps_limit = -1
   pool_num = 1
 

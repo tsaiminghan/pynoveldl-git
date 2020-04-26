@@ -19,12 +19,11 @@ class Command(object):
                'update',               
                ]
   cmd = 'help_'
-  def match(cmd, default=None):
+  def match(cmd):
     cmds = [ opt for opt in Command._options if opt.startswith(cmd)]
     exitrue(len(cmds) != 1,
             'WARN: "{}" matches {} command(s): {}'.format(cmd, len(cmds), cmds))
     return cmds[0]
-
   
   def __init__(self, *argv, **kwargs):
     self.argv = argv
@@ -37,20 +36,12 @@ class Command(object):
     if self.cmd:
       return eval(self.cmd)(*self.argv[1:], **self.kwargs)
 
-def test(*argv):
-  kwargs = {}
-  arg = []
-  for a in argv:
-    if '=' in a:
-      k, v = a.split('=')
-      kwargs[k] = v
-    else:
-      arg.append(a)
+def test(*argv, **kwargs):  
 
-  if len(arg) == 0:
+  if len(argv) == 0:
     download('http://www.b5200.net/101_101696/')
     return
-  cmd = arg[0]
+  cmd = argv[0]
   if cmd.startswith('http'):
     from bs4 import BeautifulSoup
     from .downloader import Downloader
@@ -61,7 +52,7 @@ def test(*argv):
     with open('test.txt', 'w', encoding='utf-8') as f:
       f.write(BeautifulSoup(r.text, 'lxml').prettify())
   else:
-    Command(*arg, debug_chaps_limit=10, **kwargs)()
+    Command(*argv, debug_chaps_limit=10, **kwargs)()
 
 def help_(cmd='h'):
   cmd = Command.match(cmd)
