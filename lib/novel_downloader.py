@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from .downloader import Downloader
 from .common import timelog
 from .yamlbase import yamlbase
@@ -26,7 +27,19 @@ def _makedirs(path):
 def _chk_win_folder(name):
   ''' not allow symbol \/:*?"<>|
   '''
-  return re.sub('[\\\\/:*?"<>|]+', '', name)
+  symbols = {'\\':'＼',
+            '/' :'／',
+            ':' :'：',
+            '*' :'＊',
+            '?' :'？',
+            '"' :'”',
+            '<' :'＜',
+            '>' :'＞',
+            '|' :'｜',}
+  ret = ''
+  for c in name:
+    ret += symbols.get(c, c)
+  return ret
 
 class NovelDownloader(object):
   ctl_dl_delay = 0  
