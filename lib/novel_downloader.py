@@ -8,7 +8,7 @@ import os
 import time
 import re
 import multiprocessing
-from opencc import OpenCC
+from .opencc.wrapper import OpenCC
 from .constant import *
 from .settings import GLOBAL
 import html2text
