@@ -17,6 +17,6 @@ def send(*argv, **kwarg):
       path = d[K_DIR]
       name = os.path.basename(path)
       mobi = os.path.join(path, name + '.mobi')
-      k.push(mobi)
+      r = k.push(mobi)
       if r:
         print (r)
