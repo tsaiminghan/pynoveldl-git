@@ -2,6 +2,7 @@ from lib.database import Database
 from lib.settings import _settings, novelsettings
 from lib.constant import CONF_NOVELWEBSITE
 import os
+import glob
 
 def setting(*argv, **kwargs):
   '''Usage: n settings <module> list|put|get|remove [key...] [value]
