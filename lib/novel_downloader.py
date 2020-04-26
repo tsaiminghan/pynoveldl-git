@@ -174,12 +174,13 @@ class NovelDownloader(object):
       content = f.read()
       c = self.h.handle(content)
       c = re.sub(_pattern(title), '', c, re.S).strip()
-      if GLOBAL.Simple2Traditional:
+      if GLOBAL.opencc:
         c = self.convert(c)
         chap_dict[K_TITLE] = self.convert(title)
       d = dict(chap_dict)
       d[K_BODY] = c
       yamlbase(yaml).dump(data=d)
+      return True
 
   @timelog
   def dl_all_chapters(self):
@@ -203,15 +204,15 @@ class NovelDownloader(object):
       self.convert = OpenCC(GLOBAL.opencc).convert
     success = 0
     total = len(self.all_chaps)
-    self.dl_ret = []
+    gen_ret = []
     for idx, r in enumerate(result, start=1):
       ret, idx, chap_dict = r.get()
       success += ret
-      self.dl_ret.append(ret)
-      self.gen_content(idx, chap_dict)
+      gen_ret.append(self.gen_content(idx, chap_dict))      
       print('{}/{}'.format(idx, total), end='\r')
       
     print('{}/{} ok'.format(idx, total))  
     fmt = '{{0:{}}}/{{1}} fail.'.format(len(str(total)))
     print(fmt.format(total-success, total))
+    return gen_ret
 

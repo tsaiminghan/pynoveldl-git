@@ -1,11 +1,6 @@
-#from hanziconv import HanziConv
 import time
-import os
 import sys
   
-'''def s2t(string):
-  return HanziConv.toTraditional(string)'''
-
 def exitrue(cond, msg, returncode=-1):
   if cond:
     if msg:

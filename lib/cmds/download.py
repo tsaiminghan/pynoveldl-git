@@ -34,20 +34,20 @@ def _download(booklink, **kwargs):
     return
   
   mydl.get_chapter_list()
-  mydl.dl_all_chapters()
+  if any(mydl.dl_all_chapters()):
      
-  db = Database.getDB()
-  d = db.item(mydl)
+    db = Database.getDB()
+    d = db.item(mydl)
 
-  raw2text(d)
-  if GLOBAL.AozoraEpub3_path:
-    raw2aozora(d)
-    aozora2epub(d)
-    if GLOBAL.kindlegen_path:
-      epub2mobi(d)
+    raw2text(d)
+    if GLOBAL.AozoraEpub3_path:
+      raw2aozora(d)
+      aozora2epub(d)
+      if GLOBAL.kindlegen_path:
+        epub2mobi(d)
   
-  db.add(d)
-  db.dump()
+    db.add(d)
+    db.dump()
 
 def download(*argv, **kwargs):
   '''Usage: n download <url>|[<id>...]

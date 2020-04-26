@@ -50,7 +50,7 @@ def test(*argv, **kwargs):
   else:
     Command(*argv, debug_chaps_limit=10, **kwargs)()
 
-def help_(cmd='h'):
+def help_(cmd='help_'):
   '''Usage: n <command> [arguments...]
 
 command:
