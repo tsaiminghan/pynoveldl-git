@@ -27,7 +27,7 @@ def _makedirs(path):
   if not os.path.exists(path):
     os.makedirs(path)  
 
-def _chk_win_folder(name):
+def _save_win_name(name):
   ''' not allow symbol \/:*?"<>|
   '''
   symbols = {'\\':'＼',
@@ -129,7 +129,7 @@ class NovelDownloader(object):
     soup = BeautifulSoup(r.text,'lxml')
     self.author = self.find_author(soup)
     self.bookname = self.find_bookname(soup)
-    self.all_chaps = self.chapter_list_filter(soup)[0:self.debug_chaps_limit]
+    self.all_chaps = self.chapter_list_filter(soup)[0:int(self.debug_chaps_limit)]
     self.update_time = self.find_update_time(soup)
     print (' {0:11} | {1}'.format(K_AUTHOR, self.author))
     print (' {0:11} | {1}'.format(K_BOOKNAME, self.bookname))
@@ -142,7 +142,7 @@ class NovelDownloader(object):
     title = chap_dict[K_TITLE]
     link = chap_dict[K_URL]
     
-    filename = '{0:04} {1}'.format(idx, _chk_win_folder(title))
+    filename = '{0:04} {1}'.format(idx, _save_win_name(title))
     html = self.get_book_dir([RAW, filename + '.html'])
      
     if os.path.exists(html):
@@ -166,7 +166,7 @@ class NovelDownloader(object):
 
   def gen_content(self, idx, chap_dict):
     title = chap_dict[K_TITLE]
-    filename = '{0:04} {1}'.format(idx, _chk_win_folder(title))
+    filename = '{0:04} {1}'.format(idx, _save_win_name(title))
     html = self.get_book_dir([RAW, filename + '.html'])
     yaml = self.get_book_dir([CONT, filename + '.yaml'])
 

@@ -51,6 +51,11 @@ class Database(yamlbase):
       K_COVER: getattr(mydl, K_COVER, None)
     }    
 
+  @staticmethod
+  def isNew(now, past, hours=1):
+    last_update = datetime.strptime(past, _tfmt)
+    return (now - last_update) <= timedelta(hours=hours)
+
   def load(self, filename=DATABASES_YAML):
     data = super().load(filename)
     od = OrderedDict()   
@@ -68,8 +73,7 @@ class Database(yamlbase):
     now = datetime.now()
     for v in self.data.values():
 
-      last_update = datetime.strptime(v[K_LTUPTIME], _tfmt)
-      flag_new = (now - last_update) <= timedelta(hours=1)
+      isNew = self.isNew(now, v[K_LTUPTIME])
                       
       print ('{0:>4} | {1:^10} | {2:>5} | {3}'.format(
         v[K_ID],
@@ -77,8 +81,12 @@ class Database(yamlbase):
         v[K_CHAPS],
         v[K_BOOKNAME]), end='')
       
-      color.start(flag_new)
-      print ('*new' if flag_new else '')      
+      color.start(isNew)      
+      if isNew:
+        new_chaps = v[K_CHAPS] - v[K_CHAPS_OLD]
+        print ('*new({})'.format(new_chaps) if new_chaps>0 else '*new')
+      else:
+        print ('')
       color.end()
 
   def show_by_id(self, id_):
@@ -102,18 +110,26 @@ class Database(yamlbase):
     for k, v in self.data.items():
       if v[K_URL] == url:
         return k
+  
+  def find_item_by_url(self, url):
+    k = self.find_key_by_url(url)
+    return self.data.get(k)
 
   def add(self, d):
-    k = self.find_key_by_url(d[K_URL])
-    if k:
-      if self.data[k][K_CHAPS] != d[K_CHAPS]:
+    item = self.find_item_by_url(d[K_URL])
+    if item:      
+      if item[K_CHAPS] != d[K_CHAPS]:
         # new chapters
-        d[K_LTUPTIME] = d[K_LTCHK]      
-      self.data[k].update(d)
+        d[K_LTUPTIME] = d[K_LTCHK]
+        
+      now = datetime.now()
+      if not self.isNew(now, d[K_LTUPTIME]):
+        item[K_CHAPS_OLD] = d[K_CHAPS]
+      item.update(d)
     else:
-      id_ = str(len(self.data))
-      d[K_ID] = id_
+      d[K_ID] = str(len(self.data))
       d[K_LTUPTIME] = d[K_LTCHK]
+      d[K_CHAPS_OLD] = d[K_CHAPS]
       self.data[id_] = d
 
   def update(self):
