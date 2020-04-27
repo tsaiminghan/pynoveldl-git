@@ -1,5 +1,6 @@
 from .sample1 import mydl as base
 from bs4 import BeautifulSoup
+import re
 
 class mydl(base):
 
@@ -15,7 +16,7 @@ class mydl(base):
     r = self.downloader.get(url)
     soup = BeautifulSoup(r.text, 'lxml')
 
-    self.update_time = soup.find_all('td')[8].text[-10:]
+    self.update_time = re.search('\d{4}-\d{1,2}-\d{1,2}', soup.text).group()
     
     return soup.find('h1').text
   

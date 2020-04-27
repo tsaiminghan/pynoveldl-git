@@ -1,4 +1,5 @@
 from .sample1 import mydl as base
+import re
 
 class mydl(base):
 
@@ -6,9 +7,8 @@ class mydl(base):
     return soup.find('meta', property='og:title')['content']
 
   def find_update_time(self, soup):
-    tag = soup.find('div', id='info')
-    resultset = tag.find_all('p')    
-    return (resultset[-1].text[-10:])
+    s = soup.find('div', id='info').text
+    return re.search('\d{4}-\d{1,2}-\d{1,2}', s).group()
 
 if __name__ == '__main__':
   a = mydl('http://www.b5200.net/101_101696/')
