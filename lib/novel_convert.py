@@ -53,26 +53,26 @@ def raw2aozora(novel_dict):
   textfile = os.path.join(book_dir, name)
   cont_dir = os.path.join(book_dir, CONT)  
 
-  aoz = aozora(textfile)
-  aoz.bookinfo(**novel_dict)
+  with aozora(textfile) as aoz:
+    aoz.bookinfo(**novel_dict)
   
-  all_yamls = os.listdir(cont_dir)
-  total = len(all_yamls)  
-  for idx, yaml in enumerate(all_yamls, start=1):
-    print('{}/{}'.format(idx, total), end='\r')
+    all_yamls = os.listdir(cont_dir)
+    total = len(all_yamls)  
+    for idx, yaml in enumerate(all_yamls, start=1):
+      print('{}/{}'.format(idx, total), end='\r')
 
-    yaml = os.path.join(cont_dir, yaml)
-    d = yamlbase(yaml).load()
+      yaml = os.path.join(cont_dir, yaml)
+      d = yamlbase(yaml).load()
 
-    if d.get(K_CHAPTER):
-      aoz.chapter(d[K_CHAPTER])
-    aoz.title(d[K_TITLE])
-    lines = d[K_BODY]
-    for line in lines.splitlines():
-      aoz.paragraph(line.strip())
-    aoz.chapter_end()
+      if d.get(K_CHAPTER):
+        aoz.chapter(d[K_CHAPTER])
+      aoz.title(d[K_TITLE])
+      lines = d[K_BODY]
+      for line in lines.splitlines():
+        aoz.paragraph(line.strip())
+      aoz.chapter_end()
 
-  print ('')
+    print ('')
 
 class _tmp(object):
   def __init__(self, name, suffix):
@@ -80,8 +80,11 @@ class _tmp(object):
     os.close(_)
     copyfile(name, tmp)
     self.tmp = tmp
-
-  def __del__(self):
+    
+  def __enter__(self):
+    return self
+  
+  def __exit__(self, exc_type, exc_val, exc_tb):
     os.remove(self.tmp)
 
   def __str__(self):
@@ -110,21 +113,21 @@ def aozora2epub(novel_dict):
   book_dir = novel_dict[K_DIR]
   name = os.path.basename(book_dir) + '-aozora.txt'
   aozoratext = os.path.join(book_dir, name)
-  tmp = _tmp(aozoratext, suffix='.txt')  
-  ini = os.path.abspath(os.path.join(CONF, 'AozoraEpub3.ini'))
+  with _tmp(aozoratext, suffix='.txt') as tmp:
+    ini = os.path.abspath(os.path.join(CONF, 'AozoraEpub3.ini'))
     
-  jar_path = GLOBAL.AozoraEpub3_path
-  cmd = 'java -Dfile.encoding=UTF-8 -cp AozoraEpub3.jar AozoraEpub3 -enc UTF-8 -of -i ' + ini
-  if GLOBAL.AozoraEpub3_device:
-    cmd += ' -device {}'.format(GLOBAL.AozoraEpub3_device)
-  if GLOBAL.AozoraEpub3_hor:
-    cmd += ' -hor'
-  if novel_dict.get(K_COVER):
-    cover = _tmp(novel_dict[K_COVER], suffix='.jpg')
-    #cover = os.path.abspath(novel_dict.get(K_COVER))
-    cmd += ' -c {}'.format(cover)
-  cmd += ' "{}"'.format(tmp)
+    jar_path = GLOBAL.AozoraEpub3_path
+    cmd = 'java -Dfile.encoding=UTF-8 -cp AozoraEpub3.jar AozoraEpub3 -enc UTF-8 -of -i ' + ini
+    if GLOBAL.AozoraEpub3_device:
+      cmd += ' -device {}'.format(GLOBAL.AozoraEpub3_device)
+    if GLOBAL.AozoraEpub3_hor:
+      cmd += ' -hor'
+    if novel_dict.get(K_COVER):
+      cover = _tmp(novel_dict[K_COVER], suffix='.jpg')
+      #cover = os.path.abspath(novel_dict.get(K_COVER))
+      cmd += ' -c {}'.format(cover)
+    cmd += ' "{}"'.format(tmp)
   
-  _run_cmd(cmd, cwd=jar_path, shell=True)
+    _run_cmd(cmd, cwd=jar_path, shell=True)
     
-  move(tmp[0:-4] + '.epub', aozoratext[0:-11] + '.epub')
+    move(tmp[0:-4] + '.epub', aozoratext[0:-11] + '.epub')

@@ -13,6 +13,9 @@ from .constant import *
 from .settings import GLOBAL
 import html2text
 
+if GLOBAL.opencc:
+  _convert = OpenCC(GLOBAL.opencc).convert
+
 def _pattern(title):
   pattern = '^.*\s*{}\s*\n'
   chars ='()[]'
@@ -109,12 +112,12 @@ class NovelDownloader(object):
 
   def get_author(self):
     if GLOBAL.opencc:
-      return OpenCC(GLOBAL.opencc).convert(self.author)
+      return _convert(self.author)
     return self.author
 
   def get_bookname(self):
     if GLOBAL.opencc:
-      return OpenCC(GLOBAL.opencc).convert(self.bookname)
+      return _convert(self.bookname)
     return self.bookname
   
   def get_update_time(self):
@@ -175,8 +178,8 @@ class NovelDownloader(object):
       c = self.h.handle(content)
       c = re.sub(_pattern(title), '', c, re.S).strip()
       if GLOBAL.opencc:
-        c = self.convert(c)
-        chap_dict[K_TITLE] = self.convert(title)
+        c = _convert(c)
+        chap_dict[K_TITLE] = _convert(title)
       d = dict(chap_dict)
       d[K_BODY] = c
       yamlbase(yaml).dump(data=d)
@@ -197,14 +200,12 @@ class NovelDownloader(object):
       result.append(res)
     pool.close()
     #pool.join()
-
+    
     self.h = html2text.HTML2Text()
     self.h.ignore_links = True
-    if GLOBAL.opencc:
-      self.convert = OpenCC(GLOBAL.opencc).convert
     success = 0
-    total = len(self.all_chaps)
-    gen_ret = []
+    total = len(self.all_chaps)    
+    gen_ret = []    
     for idx, r in enumerate(result, start=1):
       ret, idx, chap_dict = r.get()
       success += ret
@@ -215,4 +216,3 @@ class NovelDownloader(object):
     fmt = '{{0:{}}}/{{1}} fail.'.format(len(str(total)))
     print(fmt.format(total-success, total))
     return gen_ret
-

@@ -15,8 +15,10 @@ class Command(object):
                'update',               
                ]
   cmd = 'help_'
-  def match(cmd):
-    cmds = [ opt for opt in Command._options if opt.startswith(cmd)]
+  
+  @classmethod
+  def match(cls, cmd):
+    cmds = [ opt for opt in cls._options if opt.startswith(cmd)]
     exitrue(len(cmds) != 1,
             'WARN: "{}" matches {} command(s): {}'.format(cmd, len(cmds), cmds))
     return cmds[0]

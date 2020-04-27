@@ -11,32 +11,35 @@ _tfmt = '%Y-%m-%d %H:%M'
 
 class Database(yamlbase):
 
-  def getDB():
-    if not hasattr(Database, 'db'):
-      db = Database()
+  @classmethod
+  def getDB(cls):
+    if not hasattr(cls, 'db'):
+      db = cls()
       db.load()
-      Database.db = db    
-    return Database.db
+      cls.db = db    
+    return cls.db
 
-  def getItemById(id_):
-    return Database.getDB().find_item_by_id(id_)    
+  @classmethod
+  def getItemById(cls, id_):
+    return cls.getDB().find_item_by_id(id_)    
 
   def __init__(self):
     super().__init__(DATABASES_YAML)  
 
-  '''
-  0:
-    id:
-    author:
-    bookname:
-    url:
-    last_check:     last check time
-    last_update:    last check time that book is updated.
-    update_time:    book update time
-    chaps:
-    dir:
-  '''
-  def item(self, mydl):
+  @staticmethod
+  def item(mydl):
+    '''
+    0:
+      id:
+      author:
+      bookname:
+      url:
+      last_check:     last check time
+      last_update:    last check time that book is updated.
+      update_time:    book update time
+      chaps:
+      dir:
+    '''
     return {
       K_AUTHOR: mydl.get_author(),
       K_BOOKNAME: mydl.get_bookname(),
@@ -45,7 +48,7 @@ class Database(yamlbase):
       K_DIR: mydl.get_book_dir(),
       K_UPTIME: mydl.update_time,
       K_LTCHK: datetime.strftime(datetime.now(), _tfmt),
-      K_COVER: getattr(mydl, 'cover', None)
+      K_COVER: getattr(mydl, K_COVER, None)
     }    
 
   def load(self, filename=DATABASES_YAML):

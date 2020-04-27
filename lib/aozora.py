@@ -6,10 +6,13 @@ class aozora(_global):
   linesep = '\n'
   yamlfile = AOZORA_YAML
   def __init__(self, textfile):
-    super().__init__()    
+    super().__init__()
     self.fout = open(textfile, 'w', encoding='utf-8')
 
-  def __del__(self):
+  def __enter__(self):
+    return self
+  
+  def __exit__(self, exc_type, exc_val, exc_tb):
     if self.fout:
       self.fout.close()
 
