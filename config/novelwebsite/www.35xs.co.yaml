@@ -1,0 +1,9 @@
+Downloader:
+  proxies: null
+  timeout: 10
+  encoding: utf-8
+NovelDownloader:
+  ctl_dl_delay: 1
+  pool_num: 1
+Website:
+  url: www.35xs.co
