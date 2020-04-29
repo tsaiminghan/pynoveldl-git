@@ -15,6 +15,9 @@ import html2text
 
 if GLOBAL.opencc:
   _convert = OpenCC(GLOBAL.opencc).convert
+  
+_h = html2text.HTML2Text()
+_h.ignore_links = True  
 
 def _pattern(title):
   pattern = '^.*\s*{}\s*\n'
@@ -27,7 +30,7 @@ def _makedirs(path):
   if not os.path.exists(path):
     os.makedirs(path)  
 
-def _save_win_name(name):
+def _win_save_path(name):
   ''' not allow symbol \/:*?"<>|
   '''
   symbols = {'\\':'＼',
@@ -142,7 +145,7 @@ class NovelDownloader(object):
     title = chap_dict[K_TITLE]
     link = chap_dict[K_URL]
     
-    filename = '{0:04} {1}'.format(idx, _save_win_name(title))
+    filename = '{0:04} {1}'.format(idx, _win_save_path(title))
     html = self.get_book_dir([RAW, filename + '.html'])
      
     if os.path.exists(html):
@@ -166,7 +169,7 @@ class NovelDownloader(object):
 
   def gen_content(self, idx, chap_dict):
     title = chap_dict[K_TITLE]
-    filename = '{0:04} {1}'.format(idx, _save_win_name(title))
+    filename = '{0:04} {1}'.format(idx, _win_save_path(title))
     html = self.get_book_dir([RAW, filename + '.html'])
     yaml = self.get_book_dir([CONT, filename + '.yaml'])
 
@@ -175,7 +178,7 @@ class NovelDownloader(object):
 
     with open(html, 'r', encoding='utf-8') as f:
       content = f.read()
-      c = self.h.handle(content)
+      c = _h.handle(content)
       c = re.sub(_pattern(title), '', c, re.S).strip()
       if GLOBAL.opencc:
         c = _convert(c)

@@ -3,7 +3,7 @@ import time
 
 class Downloader(object):
   retry_time = 3
-  retry_delay = 1
+  retry_delay = 5
   headers = {'user-agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64; rv:52.0) Gecko/20100101 Firefox/52.0'}
   
   def __init__(self, encoding='gbk', **kwargs):
@@ -14,7 +14,6 @@ class Downloader(object):
     self.kwargs = kwargs
     self.encoding = encoding
 
-
   def session_get(self, link, **kwargs):
     if not hasattr(self, 'session'):
       self.session = requests.Session()
@@ -22,8 +21,7 @@ class Downloader(object):
     return (r, self.session)
 
   def get(self, link, mod=requests, **kwargs):
-    r = None
-    
+   
     if kwargs:
       _kwargs = kwargs
     else:
@@ -34,6 +32,12 @@ class Downloader(object):
         r = mod.get(link, **_kwargs)
         r.raise_for_status()
         if r.status_code == 200:
+          content_length = r.headers.get("Content-Length")
+          if content_length and int(content_length) != r.raw.tell():
+            raise Exception(
+                "incomplete response. Content-Length: {content_length}, got: {actual}"
+                  .format(content_length=content_length, actual=r.raw.tell())
+            )
           break
       except requests.exceptions.ConnectionError as errc:
         print ("Error Connecting:",errc)
@@ -43,13 +47,12 @@ class Downloader(object):
         print ("OOps: Something Else",err)
       except requests.exceptions.HTTPError as errh:
         print ("Http Error:",errh)
-        if r.status_code == 404:
-          break
-        elif r.status_code == 503:
+        if r.status_code == 503:
           time.sleep(self.retry_delay)
-          continue
-          
+          continue          
       break
+    else:
+      return None
       
     if r and not kwargs.get('stream', False):
       r.encoding = self.encoding

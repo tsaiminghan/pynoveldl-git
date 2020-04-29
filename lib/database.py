@@ -130,13 +130,13 @@ class Database(yamlbase):
       d[K_ID] = str(len(self.data))
       d[K_LTUPTIME] = d[K_LTCHK]
       d[K_CHAPS_OLD] = d[K_CHAPS]
-      self.data[id_] = d
+      self.data[d[K_ID]] = d
 
   def update(self):
     od = OrderedDict()
     for idx, (k, v) in enumerate(self.data.items()):
-      v[K_ID] = id = str(idx)
-      od[id] = v
+      v[K_ID] = str(idx)
+      od[v[K_ID]] = v
     self.data = od
     
   def remove_by_id(self, id):
