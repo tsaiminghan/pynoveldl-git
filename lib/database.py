@@ -123,7 +123,7 @@ class Database(yamlbase):
         d[K_LTUPTIME] = d[K_LTCHK]
         
       now = datetime.now()
-      if not self.isNew(now, d[K_LTUPTIME]):
+      if not self.isNew(now, item[K_LTUPTIME]):
         item[K_CHAPS_OLD] = d[K_CHAPS]
       item.update(d)
     else:

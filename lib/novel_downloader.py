@@ -46,6 +46,9 @@ def _win_save_path(name):
   for c in name:
     ret += symbols.get(c, c)
   return ret
+  
+def remove_rubi(s):
+  return s.replace('》', '＞').replace('《', '＜')
 
 class NovelDownloader(object):
   ctl_dl_delay = 0  
@@ -168,7 +171,7 @@ class NovelDownloader(object):
     return (False, idx, chap_dict)
 
   def gen_content(self, idx, chap_dict):
-    title = chap_dict[K_TITLE]
+    title = remove_rubi(chap_dict[K_TITLE])
     filename = '{0:04} {1}'.format(idx, _win_save_path(title))
     html = self.get_book_dir([RAW, filename + '.html'])
     yaml = self.get_book_dir([CONT, filename + '.yaml'])
@@ -180,6 +183,7 @@ class NovelDownloader(object):
       content = f.read()
       c = _h.handle(content)
       c = re.sub(_pattern(title), '', c, re.S).strip()
+      c = remove_rubi(c)
       if GLOBAL.opencc:
         c = _convert(c)
         chap_dict[K_TITLE] = _convert(title)
