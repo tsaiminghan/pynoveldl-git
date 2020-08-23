@@ -9,6 +9,7 @@ class Command(object):
                'help_',
                'init',
                'list_',
+               'push',
                'remove',
                'send', 'setting', 'support',
                'test',
@@ -62,6 +63,7 @@ command:
   update    currently this is same with download
   remove    remove download files by id
   list      list information of books
+  push      copy books to MTP device by id
   support   list support websites
   send      copy books to Kindle device by id
   init      setup enviroment.

@@ -172,7 +172,7 @@ class NovelDownloader(object):
 
   def gen_content(self, idx, chap_dict):
     title = chap_dict[K_TITLE]
-    filename = '{0:04} {1}'.format(idx, _win_save_path(title))    
+    filename = '{0:04} {1}'.format(idx, _win_save_path(title))
     html = self.get_book_dir([RAW, filename + '.html'])
     yaml = self.get_book_dir([CONT, filename + '.yaml'])
 

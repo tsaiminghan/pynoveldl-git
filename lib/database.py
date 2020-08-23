@@ -52,7 +52,7 @@ class Database(yamlbase):
     }    
 
   @staticmethod
-  def isNew(now, past, hours=6):
+  def isNew(now, past, hours=1):
     last_update = datetime.strptime(past, _tfmt)
     return (now - last_update) <= timedelta(hours=hours)
 
@@ -125,6 +125,7 @@ class Database(yamlbase):
         now = datetime.now()
         if not self.isNew(now, item[K_LTUPTIME]):
           item[K_CHAPS_OLD] = item[K_CHAPS]
+          
       item.update(d)
     else:
       d[K_ID] = str(len(self.data))
