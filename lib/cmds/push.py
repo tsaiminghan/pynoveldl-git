@@ -8,7 +8,15 @@ def push(*argv, **kwarg):
   '''Usage n send <id>
   copy the epub to MTP device.
   e.g.
-    n push 0'''
+    n push 0
+    
+  required: 
+    need global settings, mtp_device and mtp_copyto
+    mtp_device: 
+      the name of MTP device. ex. Pixel 3 XL
+    mtp_copyto: 
+      the path we copy books to, use the internal storage.
+      ex Download\aa\bb'''
 
   sample = pathlib.Path('lib\cmds\shell\mtptransferSample.ps1')  
   content = sample.read_text()
