@@ -52,7 +52,7 @@ class Database(yamlbase):
     }    
 
   @staticmethod
-  def isNew(now, past, hours=1):
+  def isNew(now, past, hours=6):
     last_update = datetime.strptime(past, _tfmt)
     return (now - last_update) <= timedelta(hours=hours)
 
