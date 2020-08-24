@@ -4,3 +4,5 @@ AozoraEpub3_path: null
 kindlegen_compresslevel: c1 # c0:不壓縮 c1:標準壓縮 c2:Kindle huffdic壓縮
 kindlegen_path: null
 opencc: null                # null:不轉換 s2t:簡轉繁 t2s:繁轉簡 s2twp:簡轉繁並轉換爲臺灣常用詞彙, 更多設定請查opencc
+mtp_device : Pixel 3 XL     # MTP設備名稱
+mtp_copyto : Download       # 手機內的資料夾位置，會使用內部儲存空間。
