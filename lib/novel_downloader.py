@@ -47,7 +47,7 @@ def _win_save_path(name):
     ret += symbols.get(c, c)
   return ret
   
-def convert_rubi(s):
+def remove_rubi(s):
   return s.replace('》', '※［＃終わり二重山括弧］').replace('《', '※［＃始め二重山括弧］')
 
 class NovelDownloader(object):
@@ -183,7 +183,7 @@ class NovelDownloader(object):
       content = f.read()
       c = _h.handle(content)
       c = re.sub(_pattern(title), '', c, re.S).strip()
-      c = convert_rubi(c)
+      c = remove_rubi(c)
       if GLOBAL.opencc:
         c = _convert(c)
         chap_dict[K_TITLE] = _convert(title)
